@@ -857,6 +857,33 @@ void drawScene() {
 
 	glPopMatrix();
 
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0.0, GLUT_SCREEN_WIDTH, GLUT_SCREEN_HEIGHT, 0.0, -1.0, 10.0);
+	glMatrixMode(GL_MODELVIEW);
+	//glPushMatrix();   //000
+	glLoadIdentity();
+	
+	glDisable(GL_CULL_FACE);
+
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 0.0f, 0.0);
+	glVertex2f(0.0, 0.0);
+	glVertex2f(10.0, 0.0);
+	glVertex2f(10.0, 10.0);
+	glVertex2f(0.0, 10.0);
+	glEnd();
+
+	// Making sure we can render 3d again
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	//glPopMatrix();       // ----and this?*
+
 	glutSwapBuffers();
 }
 

@@ -95,9 +95,6 @@ Bool    key[NUM_KEY_CODES], keyDown[NUM_KEY_CODES], keyUp[NUM_KEY_CODES];
 
 
 
-
-
-
 typedef struct
 {
     float width;

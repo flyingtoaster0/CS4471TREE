@@ -6,7 +6,7 @@ PushButton::PushButton() : Clickable()
 
 }
 
-PushButton::PushButton(float x, float y, float width, float height) : Clickable(x, y, width, height)
+PushButton::PushButton(float x, float y, float width, float height, std::string label) : Clickable(x, y, width, height, label)
 {
 	// Hardcoded color. Change this later maybe
 

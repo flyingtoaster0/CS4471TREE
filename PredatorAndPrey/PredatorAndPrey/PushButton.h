@@ -26,7 +26,7 @@ class PushButton : public Clickable
 
 public:
 	PushButton();
-	PushButton(float x, float y, float width, float height);
+	PushButton(float x, float y, float width, float height, std::string label);
 
 
 	

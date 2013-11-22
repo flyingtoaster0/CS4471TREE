@@ -22,8 +22,8 @@ class Slider : public Clickable
 
 public:
 	Slider();
-	Slider(float x, float y, float width, float height);
-	Slider(float x, float y, float width, float height, int min, int max);
+	Slider(float x, float y, float width, float height, std::string label);
+	Slider(float x, float y, float width, float height, std::string label, int min, int max);
 
 
 	

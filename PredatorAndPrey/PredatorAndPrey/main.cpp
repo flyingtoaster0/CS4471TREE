@@ -42,16 +42,6 @@
 using namespace std;
 
 
-float player1_x = 0;
-float player1_y = 0;
-float player1_xSpeed = 0;
-float player1_ySpeed = 0;
-float player1_radius = 0.5;
-float player1_budget = 10;//PLAYER_STARTING_BUDGET;
-
-float player2_x;
-float player2_y;
-float player2_radius = 0.5;
 
 float spinAngle = 0;
 float spinSpeed = 0;
@@ -66,16 +56,15 @@ GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f}; //white light
 GLfloat lightPos0[] = {0.0f, 0.0f, 1.5f, 1.0f}; 
 
 
-float _scale = 0.5f;
+float _scale = 0.9f;
 
-float *budget;
 Setting_list *settings;
 
 
 
 
-PushButton *button1 = new PushButton(2, 2, 50, 30);
-Slider *slider1 = new Slider(2, 100, 100, 30, 0, 10);
+PushButton *button1 = new PushButton(2, 2, 50, 30, "button1");
+Slider *slider1 = new Slider(2, 100, 100, 30,"slider1", 0, 10);
 
 
 typedef unsigned char   Bool;
@@ -808,7 +797,7 @@ float _cameraAngle = 0.0f;
 
 void renderStringToWindow(string s)
 {
-	void *font = GLUT_BITMAP_HELVETICA_10;
+	void *font = GLUT_BITMAP_TIMES_ROMAN_24;
 	for (string::iterator i = s.begin(); i != s.end(); ++i)
 	{
 		char c = *i;
@@ -892,8 +881,33 @@ void drawSlider(Slider *slider)
 	glVertex2f(button->getX(), button->getY() + button->getHeight());
 	*/
 	glEnd();
-
 	glPopMatrix();
+
+
+	stringstream  convert;
+	//convert << slider->getLabel() << slider->getValue();
+	convert << "N0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	string s = convert.str();
+	void * font = GLUT_BITMAP_TIMES_ROMAN_24;
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+
+	
+	glColor3f(1.0f, 1.0f, 1.0f);
+	
+	glPushMatrix();
+	glLoadIdentity();
+	glScalef(1, 1, 50);
+	glTranslatef(slider->getX(),slider->getY() + slider ->getHeight(), 0.1f); // Can't increase text size?
+	t3dDraw2D(s, -1, 1, 1.5f);
+	glPopMatrix();
+
+	
+
+	
 }
 
 
@@ -1053,7 +1067,7 @@ int main(int argc, char** argv) {
 	settings = new Setting_list;
 	loadSettings(settings);
 	cam_z = settings->ZOOM_VALUE;
-	budget = new float(settings->PLAYER_STARTING_BUDGET);//settings->PLAYER_STARTING_BUDGET;
+
 
 	initFieldObjects();
 	

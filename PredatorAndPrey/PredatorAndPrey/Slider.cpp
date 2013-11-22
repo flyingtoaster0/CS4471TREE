@@ -8,7 +8,7 @@ Slider::Slider() : Clickable()
 	this->clicked = false;
 }
 
-Slider::Slider(float x, float y, float width, float height) : Clickable(x, y, width, height)
+Slider::Slider(float x, float y, float width, float height, std::string label) : Clickable(x, y, width, height, label)
 {
 	// Hardcoded color. Change this later maybe
 
@@ -21,7 +21,7 @@ Slider::Slider(float x, float y, float width, float height) : Clickable(x, y, wi
 	this->clicked = false;
 }
 
-Slider::Slider(float x, float y, float width, float height, int min, int max) : Clickable(x, y, width, height)
+Slider::Slider(float x, float y, float width, float height,std::string label, int min, int max ) : Clickable(x, y, width, height, label)
 {
 	// Hardcoded color. Change this later maybe
 

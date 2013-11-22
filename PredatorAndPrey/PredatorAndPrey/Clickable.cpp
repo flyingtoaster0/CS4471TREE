@@ -23,3 +23,11 @@ bool Clickable::overlap(float x, float y)
 		return true;
 	return false;
 }
+
+
+
+float Clickable::getX() {return this->x;}
+float Clickable::getY() {return this->y;}
+
+float Clickable::getWidth() {return this->width;}
+float Clickable::getHeight() {return this->height;}

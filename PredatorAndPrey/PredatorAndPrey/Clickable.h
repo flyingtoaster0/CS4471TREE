@@ -16,6 +16,11 @@ public:
 	void mouseUp(float x, float y);
 	
 	bool overlap(float x, float y);
+	
+	float getX();
+	float getY();
+	float getWidth();
+	float getHeight();
 
 };
 

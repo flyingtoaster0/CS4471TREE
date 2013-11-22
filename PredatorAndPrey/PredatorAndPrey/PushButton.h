@@ -20,7 +20,6 @@ class PushButton : public Clickable
 	void setDownColor(vec3 color);
 	void setUpColor(vec3 color);
 
-	vec3 getColor();
 
 	void setState(int state);
 	int getState();
@@ -34,6 +33,7 @@ public:
 	void mouseDown(float x, float y);
 	void mouseUp(float x, float y);
 	
+	vec3 getColor();
 };
 
 #endif

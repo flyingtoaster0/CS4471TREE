@@ -1,4 +1,5 @@
 #include "PushButton.h"
+#include <iostream>
 
 PushButton::PushButton() : Clickable()
 {
@@ -11,6 +12,7 @@ PushButton::PushButton(float x, float y, float width, float height) : Clickable(
 
 	this->upColor = vec3(0.5, 0.0, 0.8);
 	this->downColor = vec3(1.0, 1.0, 1.0) - this->upColor;
+	this->setColor(upColor);
 }
 
 void PushButton::mouseDown(float x, float y)
@@ -25,7 +27,9 @@ void PushButton::mouseDown(float x, float y)
 void PushButton::mouseUp(float x, float y)
 {
 	if(getState() == DOWN && overlap(x,y))
-		int x = 1;
+	{
+		std::cout<<"Shit got clicked, yo"<<'\n';
+	}
 	setState(UP);
 	setColor(upColor);
 }
@@ -50,3 +54,4 @@ vec3 PushButton::getColor()
 {
 	return this->color;
 }
+

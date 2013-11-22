@@ -167,14 +167,26 @@ Node *treeRecurse(Node *currentNode, int depth, float width, float height)
 }
 
 
+/*
+Params:
+shrink (branch length/width)
+branch spread
+#branches
+
+
+
+*/
+
+
 Node *treeRecurse(Node *currentNode, vec3 position, vec3 direction, float width, int depth)
 {
 	int branches=4;
 	float shrink=0.7;
+	float spread = 4;
 	Node *current = currentNode;
 	for(int i=0; i<depth; i++)
 	{
-		current->addChild(position, direction, width*shrink);
+		current->addChild(position, direction*shrink, width*shrink);
 		for(int j=0; j<branches; j++)
 		{
 			//(j* 2 * PI)*(j/branches)
@@ -183,15 +195,18 @@ Node *treeRecurse(Node *currentNode, vec3 position, vec3 direction, float width,
 			//float newX = 0;
 			//float newY = 0;
 			vec3 newPosition = position+direction;
-			vec3 newDirection = direction+ vec3(newX, newY, 0);
+			//newPosition = normalize(newPosition) * shrink;
+
+			vec3 newDirection = direction + vec3(newX, newY, 0);
 
 
 			float angle = acos(dot(direction, newDirection)/(length(direction)*length(newDirection)));
+			
 			//glPushMatrix();
 			//glTranslatef(newPosition.x, newPosition.y, newPosition.z);
 			//glutSolidCone(width, length(newDirection), 15, 15);
 			//glPopMatrix();
-			treeRecurse(current->getChildren(), newPosition, newDirection, width*shrink, depth-1);
+			treeRecurse(current->getChildren(), newPosition, newDirection*shrink, width*shrink, depth-1);
 		}
 
 	}

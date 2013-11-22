@@ -794,7 +794,7 @@ void handleResize(int w, int h) {
 
 
 float _cameraAngle = 0.0f;
-
+/*
 void renderStringToWindow(string s)
 {
 	void *font = GLUT_BITMAP_TIMES_ROMAN_24;
@@ -804,6 +804,7 @@ void renderStringToWindow(string s)
 		glutBitmapCharacter(font, c);
 	}
 }
+*/
 
 
 void drawTree()
@@ -848,6 +849,26 @@ void drawButton(PushButton *button)
 }
 
 
+void renderStringToWindow(string str, int x, int y)
+{
+	
+	glDisable(GL_LIGHTING);
+	glColor3f(1.0, 1.0, 1.0);
+	
+	glRasterPos2i(x, y);
+	stringstream  convert;
+	convert << str <<'\0';
+	string s = convert.str();
+	void *font = GLUT_BITMAP_9_BY_15;
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glEnable(GL_LIGHTING);
+}
+
+
 void drawSlider(Slider *slider)
 {
 
@@ -883,27 +904,15 @@ void drawSlider(Slider *slider)
 	glEnd();
 	glPopMatrix();
 
-
-	stringstream  convert;
-	//convert << slider->getLabel() << slider->getValue();
-	convert << "N0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-	string s = convert.str();
-	void * font = GLUT_BITMAP_TIMES_ROMAN_24;
-	for (string::iterator i = s.begin(); i != s.end(); ++i)
-	{
-		char c = *i;
-		glutBitmapCharacter(font, c);
-	}
+	
+	
+	
 
 	
 	glColor3f(1.0f, 1.0f, 1.0f);
 	
-	glPushMatrix();
-	glLoadIdentity();
-	glScalef(1, 1, 50);
-	glTranslatef(slider->getX(),slider->getY() + slider ->getHeight(), 0.1f); // Can't increase text size?
-	t3dDraw2D(s, -1, 1, 1.5f);
-	glPopMatrix();
+	renderStringToWindow(slider->getLabel(), slider->getX(), slider->getY());
+	renderStringToWindow(to_string(slider->getValue()), slider->getX() + slider->getWidth() - 9, slider->getY());
 
 	
 
@@ -913,6 +922,8 @@ void drawSlider(Slider *slider)
 
 void draw2Dthings()
 {
+	
+	glDisable(GL_LIGHTING);
 	drawButton(button1);
 	drawSlider(slider1);
 	/*
@@ -924,7 +935,9 @@ void draw2Dthings()
 	glVertex2f(0.0, 10.0);
 	glEnd();
 	*/
+	glEnable(GL_LIGHTING);
 }
+
 
 
 
@@ -947,10 +960,15 @@ void drawScene() {
     
 	setLighting();
     
-	glColor3f(0.0, 0.0, 1.0);
-
 	
+	
+	
+	
+
+
+
 	//drawTree();
+	glColor3f(0.0, 0.0, 1.0);
 	glPushMatrix();
 	glTranslatef(0, 0, -10);
 	glRotatef(cam_x, 1, 0, 0);
@@ -1007,7 +1025,7 @@ void drawScene() {
 	t3dDraw3D(s, -1, 0, 0.2f, 1.5f);
 	glPopMatrix();
 	*/
-
+	
 	glPopMatrix();
 
 
@@ -1024,16 +1042,23 @@ void drawScene() {
 	glClear(GL_DEPTH_BUFFER_BIT);
 	
 
-	//For lighting the buttons
-	glEnable(GL_LIGHT1);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor0);
-	glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
+
+	glColor3f(1.0, 1.0, 1.0);
+	glPushMatrix();
+
+	
+	
+	
+	
+	glPopMatrix();
+
+
+
 
 	glNormal3f(0.0f, 0.0f, 1.0f);
 	GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 	draw2Dthings();
-	glDisable(GL_LIGHT1);
 
 	// Making sure we can render 3d again
 	glMatrixMode(GL_PROJECTION);

@@ -28,7 +28,7 @@ void PushButton::mouseUp(float x, float y)
 {
 	if(getState() == DOWN && overlap(x,y))
 	{
-		std::cout<<"Shit got clicked, yo"<<'\n';
+		//std::cout<<"Shit got clicked, yo"<<'\n';
 	}
 	setState(UP);
 	setColor(upColor);

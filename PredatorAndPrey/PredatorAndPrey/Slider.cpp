@@ -17,7 +17,6 @@ Slider::Slider(float x, float y, float width, float height, std::string label) :
 	this->value = 0;
 	this->min = 0;
 	this->max = 10;
-	
 	this->clicked = false;
 }
 
@@ -30,7 +29,6 @@ Slider::Slider(float x, float y, float width, float height,std::string label, in
 	this->value = 0;
 	this->min = min;
 	this->max = max;
-
 	this->clicked = false;
 
 }
@@ -41,8 +39,7 @@ void Slider::mouseDown(float x, float y)
 	{
 		int value = max * calcXpercent(x);
 		setValue(value);
-		std::cout<<"Slider value changed: "<<value<<'\n';
-		
+		//std::cout<<"Slider value changed: "<<value<<'\n';
 		this->clicked = true;
 	}
 }
@@ -59,7 +56,7 @@ void Slider::mouseDrag(float x, float y)
 	{
 		int value = max * calcXpercent(x);
 		setValue(value);
-		std::cout<<"Slider value changed: "<<value<<'\n';
+		//std::cout<<"Slider value changed: "<<value<<'\n';
 	}
 }
 

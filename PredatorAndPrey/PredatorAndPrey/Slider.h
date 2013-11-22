@@ -20,6 +20,7 @@ class Slider : public Clickable
 
 	float calcXpercent(float x);
 
+
 public:
 	Slider();
 	Slider(float x, float y, float width, float height, std::string label);

@@ -12,6 +12,8 @@
 #include <string>
 #include "Node.h"
 #include "vec.h"
+#include "PushButton.h"
+#include "Slider.h"
 
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -63,10 +65,17 @@ float cam_z = 0.0;
 GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f}; //white light
 GLfloat lightPos0[] = {0.0f, 0.0f, 1.5f, 1.0f}; 
 
+
 float _scale = 0.5f;
 
 float *budget;
 Setting_list *settings;
+
+
+
+
+PushButton *button1 = new PushButton(2, 2, 50, 30);
+Slider *slider1 = new Slider(2, 100, 100, 30, 0, 10);
 
 
 typedef unsigned char   Bool;
@@ -86,15 +95,58 @@ Bool    key[NUM_KEY_CODES], keyDown[NUM_KEY_CODES], keyUp[NUM_KEY_CODES];
 
 
 
-
-
-
 typedef struct
 {
     float width;
 	float height;
 	int children;
 } Info;
+
+
+
+bool left_mouse;
+
+void mouse(int button, int state, int x, int y)
+{
+	float windowWidth = glutGet(GLUT_WINDOW_WIDTH);
+	float windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+	float xFraction = WINDOW_WIDTH / windowWidth;
+	float yFraction = WINDOW_HEIGHT / windowHeight;
+
+	int mouseX = x * xFraction;
+	int mouseY = y * yFraction;
+	//The above is for correction in case of window resizing
+
+	if(state == 0) //Down
+	{
+		button1->mouseDown(mouseX, mouseY);
+		slider1->mouseDown(mouseX, mouseY);
+		left_mouse = true;
+	}
+	else if(state == 1) //Up
+	{
+		button1->mouseUp(mouseX, mouseY);
+		slider1->mouseUp(mouseX, mouseY);
+		left_mouse = false;
+	}
+}
+
+void onMotion(int x, int y)
+{
+	float windowWidth = glutGet(GLUT_WINDOW_WIDTH);
+	float windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+	float xFraction = WINDOW_WIDTH / windowWidth;
+	float yFraction = WINDOW_HEIGHT / windowHeight;
+
+	int mouseX = x * xFraction;
+	int mouseY = y * yFraction;
+
+	if(left_mouse)
+	{
+		slider1->mouseDrag(mouseX, mouseY);
+	}
+}
+
 
 
 Node *treeRecurse(Node *currentNode, int depth, float width, float height)
@@ -343,12 +395,13 @@ void setLighting()
 		lightPos0[2] += 0.1;
 	}
 	
-	
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
 
+
 	glColor3f(1.0, 1.0, 1.0);
 	drawSphere(lightPos0[0], lightPos0[1], lightPos0[2], 0.2);
+
 }
 
 
@@ -775,8 +828,94 @@ void drawTree()
 	//glPopMatrix();
 }
 
+void drawButton(PushButton *button)
+{
+
+	glPushMatrix();
+	glTranslatef(button->getX(), button->getY(), -5.0f);
+
+	glBegin(GL_QUADS);
+	glColor3f(button->getColor().x, button->getColor().y, button->getColor().z);
+	
+	//glColor3f(1.0f, 1.0f, 1.0f);
+
+	glVertex2f(0, 0);
+	glVertex2f(0 + button->getWidth(), 0);
+	glVertex2f(0 + button->getWidth(), 0 + button->getHeight());
+	
+	glVertex2f(0, 0 + button->getHeight());
 
 
+	/*
+	glVertex2f(button->getX(), button->getY());
+	glVertex2f(button->getX() + button->getWidth(), button->getY());
+	glVertex2f(button->getX() + button->getWidth(), button->getY() + button->getHeight());
+	
+	glVertex2f(button->getX(), button->getY() + button->getHeight());
+	*/
+	glEnd();
+
+	glPopMatrix();
+}
+
+
+void drawSlider(Slider *slider)
+{
+
+	glPushMatrix();
+	glTranslatef(slider->getX(), slider->getY(), -5.0f);
+
+	glBegin(GL_QUADS);
+
+	
+	glColor3f(1.0, 1.0, 1.0);
+	
+	glVertex2f(slider->sliderBarPos(), 0);
+	glVertex2f(slider->sliderBarPos() + slider->getSliderBarWidth(), 0);
+	glVertex2f(slider->sliderBarPos() + slider->getSliderBarWidth(), 0 + slider->getHeight());
+	glVertex2f(slider->sliderBarPos(), 0 + slider->getHeight());
+
+
+
+	glColor3f(slider->getColor().x, slider->getColor().y, slider->getColor().z);
+	glVertex2f(0, 0);
+	glVertex2f(slider->getWidth(), 0);
+	glVertex2f(slider->getWidth(), slider->getHeight());
+	glVertex2f(0, slider->getHeight());
+
+
+	/*
+	glVertex2f(button->getX(), button->getY());
+	glVertex2f(button->getX() + button->getWidth(), button->getY());
+	glVertex2f(button->getX() + button->getWidth(), button->getY() + button->getHeight());
+	
+	glVertex2f(button->getX(), button->getY() + button->getHeight());
+	*/
+	glEnd();
+
+	glPopMatrix();
+}
+
+
+void draw2Dthings()
+{
+	drawButton(button1);
+	drawSlider(slider1);
+	/*
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 0.0f, 0.0);
+	glVertex2f(0.0, 0.0);
+	glVertex2f(10.0, 0.0);
+	glVertex2f(10.0, 10.0);
+	glVertex2f(0.0, 10.0);
+	glEnd();
+	*/
+}
+
+
+
+
+GLfloat lightPos1[] = {0.0f, 0.0f, 15.0f, 1.0f}; 
 //Draws the scene
 void drawScene() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -861,28 +1000,31 @@ void drawScene() {
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	glOrtho(0.0, GLUT_SCREEN_WIDTH, GLUT_SCREEN_HEIGHT, 0.0, -1.0, 10.0);
+	//glOrtho(-(2*GLUT_SCREEN_WIDTH/GLUT_SCREEN_HEIGHT), (2*GLUT_SCREEN_WIDTH/GLUT_SCREEN_HEIGHT), 2, 2, -15.0, 15.0);
+	glOrtho(0.0, WINDOW_WIDTH, WINDOW_HEIGHT, 0.0, -15.0, 15.0);
 	glMatrixMode(GL_MODELVIEW);
-	//glPushMatrix();   //000
 	glLoadIdentity();
 	
 	glDisable(GL_CULL_FACE);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
+	
 
-	glBegin(GL_QUADS);
-	glColor3f(1.0f, 0.0f, 0.0);
-	glVertex2f(0.0, 0.0);
-	glVertex2f(10.0, 0.0);
-	glVertex2f(10.0, 10.0);
-	glVertex2f(0.0, 10.0);
-	glEnd();
+	//For lighting the buttons
+	glEnable(GL_LIGHT1);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor0);
+	glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
+
+	glNormal3f(0.0f, 0.0f, 1.0f);
+	GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+	draw2Dthings();
+	glDisable(GL_LIGHT1);
 
 	// Making sure we can render 3d again
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	//glPopMatrix();       // ----and this?*
 
 	glutSwapBuffers();
 }
@@ -922,6 +1064,10 @@ int main(int argc, char** argv) {
 
 	//Set handler functions
 	glutDisplayFunc(drawScene);
+
+	glutMouseFunc(mouse);
+    glutMotionFunc(onMotion);
+
 
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboardUp);

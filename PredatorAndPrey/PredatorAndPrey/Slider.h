@@ -16,6 +16,7 @@ class Slider : public Clickable
 
 	int max, min, value;
 
+	bool clicked;
 
 	float calcXpercent(float x);
 
@@ -27,6 +28,8 @@ public:
 
 	
 	void mouseDown(float x, float y);
+	void mouseUp(float x, float y);
+	void mouseDrag(float x, float y);
 	
 	vec3 getColor();
 	

@@ -107,6 +107,7 @@ typedef struct
 
 
 
+bool left_mouse;
 
 void mouse(int button, int state, int x, int y)
 {
@@ -123,11 +124,29 @@ void mouse(int button, int state, int x, int y)
 	{
 		button1->mouseDown(mouseX, mouseY);
 		slider1->mouseDown(mouseX, mouseY);
-
+		left_mouse = true;
 	}
 	else if(state == 1) //Up
 	{
 		button1->mouseUp(mouseX, mouseY);
+		slider1->mouseUp(mouseX, mouseY);
+		left_mouse = false;
+	}
+}
+
+void onMotion(int x, int y)
+{
+	float windowWidth = glutGet(GLUT_WINDOW_WIDTH);
+	float windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+	float xFraction = WINDOW_WIDTH / windowWidth;
+	float yFraction = WINDOW_HEIGHT / windowHeight;
+
+	int mouseX = x * xFraction;
+	int mouseY = y * yFraction;
+
+	if(left_mouse)
+	{
+		slider1->mouseDrag(mouseX, mouseY);
 	}
 }
 
@@ -1050,6 +1069,7 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(drawScene);
 
 	glutMouseFunc(mouse);
+    glutMotionFunc(onMotion);
 
 
     glutKeyboardFunc(keyboard);

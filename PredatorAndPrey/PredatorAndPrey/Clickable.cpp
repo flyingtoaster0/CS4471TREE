@@ -9,7 +9,7 @@ Clickable::Clickable()
 	this->height = 0;
 }
 
-Clickable::Clickable(float x, float y, float height, float width)
+Clickable::Clickable(float x, float y, float width, float height)
 {
 	this->x = x;
 	this->y = y;

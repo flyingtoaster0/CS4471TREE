@@ -13,6 +13,7 @@
 #include "Node.h"
 #include "vec.h"
 #include "PushButton.h"
+#include "Slider.h"
 
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -73,7 +74,8 @@ Setting_list *settings;
 
 
 
-PushButton *button1 = new PushButton(2, 2, 20, 30);
+PushButton *button1 = new PushButton(2, 2, 50, 30);
+Slider *slider1 = new Slider(2, 100, 100, 30, 0, 10);
 
 
 typedef unsigned char   Bool;
@@ -118,9 +120,15 @@ void mouse(int button, int state, int x, int y)
 	//The above is for correction in case of window resizing
 
 	if(state == 0) //Down
+	{
 		button1->mouseDown(mouseX, mouseY);
+		slider1->mouseDown(mouseX, mouseY);
+
+	}
 	else if(state == 1) //Up
+	{
 		button1->mouseUp(mouseX, mouseY);
+	}
 }
 
 
@@ -834,9 +842,49 @@ void drawButton(PushButton *button)
 	glPopMatrix();
 }
 
+
+void drawSlider(Slider *slider)
+{
+
+	glPushMatrix();
+	glTranslatef(slider->getX(), slider->getY(), -5.0f);
+
+	glBegin(GL_QUADS);
+
+	
+	glColor3f(1.0, 1.0, 1.0);
+	
+	glVertex2f(slider->sliderBarPos(), 0);
+	glVertex2f(slider->sliderBarPos() + slider->getSliderBarWidth(), 0);
+	glVertex2f(slider->sliderBarPos() + slider->getSliderBarWidth(), 0 + slider->getHeight());
+	glVertex2f(slider->sliderBarPos(), 0 + slider->getHeight());
+
+
+
+	glColor3f(slider->getColor().x, slider->getColor().y, slider->getColor().z);
+	glVertex2f(0, 0);
+	glVertex2f(slider->getWidth(), 0);
+	glVertex2f(slider->getWidth(), slider->getHeight());
+	glVertex2f(0, slider->getHeight());
+
+
+	/*
+	glVertex2f(button->getX(), button->getY());
+	glVertex2f(button->getX() + button->getWidth(), button->getY());
+	glVertex2f(button->getX() + button->getWidth(), button->getY() + button->getHeight());
+	
+	glVertex2f(button->getX(), button->getY() + button->getHeight());
+	*/
+	glEnd();
+
+	glPopMatrix();
+}
+
+
 void draw2Dthings()
 {
 	drawButton(button1);
+	drawSlider(slider1);
 	/*
 	glBegin(GL_QUADS);
 	glColor3f(1.0f, 0.0f, 0.0);

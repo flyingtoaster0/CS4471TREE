@@ -15,10 +15,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="PushButton.cpp" />
+    <ClCompile Include="Slider.cpp" />
     <ClCompile Include="text3d.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clickable.h" />
+    <ClInclude Include="Slider.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="mat.h" />
     <ClInclude Include="Node.h" />

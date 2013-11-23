@@ -68,14 +68,14 @@ Slider *slider1 = new Slider(2, 100, 100, 30,"Light R", 0, 10);
 Slider *slider2 = new Slider(2, 150, 100, 30,"Light G", 0, 10);
 Slider *slider3 = new Slider(2, 200, 100, 30,"Light B1", 0, 10);
 
-Slider *slider4 = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10);
-PushButton *button4 = new PushButton(105, 250, 50, 30, "Random Num");
+Slider *sprout_num_slider = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10);
+PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
-Slider *slider5 = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10);
-PushButton *button5 = new PushButton(105, 300, 50, 30, "Random Dir");
+Slider *sprout_dir_slider = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10);
+PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
 
-Slider *slider6 = new Slider(2, 350, 100, 30,"Segment Len", 0, 10);
-PushButton *button6 = new PushButton(105, 350, 50, 30, "Random Len");
+Slider *segment_len_slider = new Slider(2, 350, 100, 30,"Segment Len", 0, 10);
+PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
 
 typedef unsigned char   Bool;
@@ -125,9 +125,9 @@ void mouse(int button, int state, int x, int y)
 		slider1->mouseDown(mouseX, mouseY);
 		slider2->mouseDown(mouseX, mouseY);
 		slider3->mouseDown(mouseX, mouseY);
-		slider4->mouseDown(mouseX, mouseY);
-		slider5->mouseDown(mouseX, mouseY);
-		slider6->mouseDown(mouseX, mouseY);
+		sprout_num_slider->mouseDown(mouseX, mouseY);
+		sprout_dir_slider->mouseDown(mouseX, mouseY);
+		segment_len_slider->mouseDown(mouseX, mouseY);
 		left_mouse = true;
 	}
 	else if(state == 1) //Up
@@ -138,9 +138,9 @@ void mouse(int button, int state, int x, int y)
 		slider1->mouseUp(mouseX, mouseY);
 		slider2->mouseDown(mouseX, mouseY);
 		slider3->mouseDown(mouseX, mouseY);
-		slider4->mouseDown(mouseX, mouseY);
-		slider5->mouseDown(mouseX, mouseY);
-		slider6->mouseDown(mouseX, mouseY);
+		sprout_num_slider->mouseDown(mouseX, mouseY);
+		sprout_dir_slider->mouseDown(mouseX, mouseY);
+		segment_len_slider->mouseDown(mouseX, mouseY);
 		left_mouse = false;
 	}
 }
@@ -160,9 +160,9 @@ void onMotion(int x, int y)
 		slider1->mouseDrag(mouseX, mouseY);
 		slider2->mouseDrag(mouseX, mouseY);
 		slider3->mouseDrag(mouseX, mouseY);
-		slider4->mouseDrag(mouseX, mouseY);
-		slider5->mouseDrag(mouseX, mouseY);
-		slider6->mouseDrag(mouseX, mouseY);
+		sprout_num_slider->mouseDrag(mouseX, mouseY);
+		sprout_dir_slider->mouseDrag(mouseX, mouseY);
+		segment_len_slider->mouseDrag(mouseX, mouseY);
 	}
 }
 
@@ -979,9 +979,9 @@ void draw2Dthings()
 	drawSlider(slider1);
 	drawSlider(slider2);
 	drawSlider(slider3);
-	drawSlider(slider4);
-	drawSlider(slider5);
-	drawSlider(slider6);
+	drawSlider(sprout_num_slider);
+	drawSlider(sprout_dir_slider);
+	drawSlider(segment_len_slider);
 	
 
 	glEnable(GL_LIGHTING);

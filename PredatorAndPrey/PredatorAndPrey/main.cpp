@@ -172,12 +172,17 @@ Node *treeRecurse(Node *currentNode, Node *parentNode, vec3 position, vec3 direc
 		
 		for(int j=0; j<branches; j++)
 		{
-			float newX = sin((2 * PI) * (((float)j) / (float)branches));
-			float newY = cos((2 * PI) * (((float)j) / (float)branches));
+			float newX = cos((2 * PI) * (((float)j) / (float)branches));
+			float newY = sin((2 * PI) * (((float)j) / (float)branches));
 			float newZ = sin(j * PI / branches);
 			
 			vec3 change;
 			vec3 newDirection;
+
+			vec3 nextPosition = vec3(currentNode->getPosition().x+newX, currentNode->getPosition().y+newY, currentNode->getPosition().z + currentNode->getDirection().z);
+			
+			vec3 nextDirection = nextPosition - currentNode->getPosition();
+			nextDirection = vec3(-nextDirection.x, -nextDirection.y, nextDirection.z);
 			
 			change = normalize(vec3(newY, newX, 0)) * spread;
 			if(!parentNode)
@@ -188,9 +193,8 @@ Node *treeRecurse(Node *currentNode, Node *parentNode, vec3 position, vec3 direc
 			}
 			else
 			{
-				newDirection = currentNode->getDirection()+change;
-				newDirection = newDirection * lengthShrink;
-				newPosition = currentNode->getPosition()+currentNode->getDirection();
+				newDirection = nextDirection;
+				newPosition = nextPosition;
 			}
 			//newPosition = normalize(newPosition) * shrink;
 
@@ -208,7 +212,7 @@ void drawUpsideDownCone(float base, float height, float slices, float stack)
 {
 
 	glPushMatrix();
-	glTranslatef(0,0,height);
+	//glTranslatef(0,0,height);
 	//glRotatef(180,1,1,1);
 	glutSolidCone(base, height, slices, stack);
 
@@ -219,46 +223,55 @@ void treeDraw(Node *currentNode, Node *parentNode)
 {
 	if(parentNode==NULL)
 	{
-		glPushMatrix();
+		//glPushMatrix();
 		vec3 direction = currentNode->getDirection();
 		glTranslatef(0, 0, 0);
-		glutSolidCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
+		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
 		//drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
-		glPopMatrix();
+		//
 
 		Node *children = currentNode->getChildren();
 		Node *currentChild = children;
-		//for(int i=0; i<currentNode->getNumChildren(); i++)
+		
 		while(currentChild)
 		{
 			treeDraw(currentChild, currentNode);
 			currentChild = currentChild->getSiblings();
 		}
+		glPopMatrix();
 	}
 	else
 	{
 		if(currentNode != NULL)
 		{
-
-			glPushMatrix();
-			//vec3 direction = currentNode->getDirection();
-			//gluLookAt(currentNode->getX(), currentNode->getY(), currentNode->getZ(), currentNode->getX()-1, currentNode->getY()-1, currentNode->getZ()-1, direction.x, direction.y, direction.z);
 			
+			//glTranslatef(currentNode->getDirection().x, currentNode->getDirection().y,  currentNode->getDirection().z);
+			
+			glPushMatrix();
+			
+			glTranslatef(currentNode->getX() , currentNode->getY(), currentNode->getZ());
 			float angle = incidenceAngle(currentNode->getDirection(), parentNode->getDirection());
-			vec3 orthogVec = cross( currentNode->getDirection(), parentNode->getDirection());
-			glTranslatef(currentNode->getX() , -currentNode->getY(), currentNode->getZ());
-			glRotatef(angle, orthogVec.x, -orthogVec.y, orthogVec.z);
-			glutSolidCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
+			vec3 orthogVec = cross( parentNode->getDirection(), currentNode->getDirection());
+			
+			glRotatef(angle, -orthogVec.x,-orthogVec.y, orthogVec.z);
+			drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
+			
+			
+			
 			glPopMatrix();
-		
 
 			Node *children = currentNode->getChildren();
 			Node *currentChild = children;
+			
 			while(currentChild)
 			{
 				treeDraw(currentChild, currentNode);
 				currentChild = currentChild->getSiblings();
 			}
+			
+		
+
+			
 		}
 	}
 }

@@ -9,7 +9,7 @@
 
 #include "vec.h"
 #include <iostream>
-
+#define DegreesToRadians 180/3.1415926
 namespace Angel {
 
 //----------------------------------------------------------------------------

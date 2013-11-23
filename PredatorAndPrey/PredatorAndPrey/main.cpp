@@ -63,8 +63,19 @@ Setting_list *settings;
 
 
 
-PushButton *button1 = new PushButton(2, 2, 50, 30, "button1");
-Slider *slider1 = new Slider(2, 100, 100, 30,"slider1", 0, 10);
+
+Slider *slider1 = new Slider(2, 100, 100, 30,"Light R", 0, 10);
+Slider *slider2 = new Slider(2, 150, 100, 30,"Light G", 0, 10);
+Slider *slider3 = new Slider(2, 200, 100, 30,"Light B1", 0, 10);
+
+Slider *slider4 = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10);
+PushButton *button4 = new PushButton(105, 250, 50, 30, "Random Num");
+
+Slider *slider5 = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10);
+PushButton *button5 = new PushButton(105, 300, 50, 30, "Random Dir");
+
+Slider *slider6 = new Slider(2, 350, 100, 30,"Segment Len", 0, 10);
+PushButton *button6 = new PushButton(105, 350, 50, 30, "Random Len");
 
 
 typedef unsigned char   Bool;
@@ -108,14 +119,28 @@ void mouse(int button, int state, int x, int y)
 
 	if(state == 0) //Down
 	{
-		button1->mouseDown(mouseX, mouseY);
+		button4->mouseDown(mouseX, mouseY);
+		button5->mouseDown(mouseX, mouseY);
+		button6->mouseDown(mouseX, mouseY);
 		slider1->mouseDown(mouseX, mouseY);
+		slider2->mouseDown(mouseX, mouseY);
+		slider3->mouseDown(mouseX, mouseY);
+		slider4->mouseDown(mouseX, mouseY);
+		slider5->mouseDown(mouseX, mouseY);
+		slider6->mouseDown(mouseX, mouseY);
 		left_mouse = true;
 	}
 	else if(state == 1) //Up
 	{
-		button1->mouseUp(mouseX, mouseY);
+		button4->mouseUp(mouseX, mouseY);
+		button5->mouseUp(mouseX, mouseY);
+		button6->mouseUp(mouseX, mouseY);
 		slider1->mouseUp(mouseX, mouseY);
+		slider2->mouseDown(mouseX, mouseY);
+		slider3->mouseDown(mouseX, mouseY);
+		slider4->mouseDown(mouseX, mouseY);
+		slider5->mouseDown(mouseX, mouseY);
+		slider6->mouseDown(mouseX, mouseY);
 		left_mouse = false;
 	}
 }
@@ -133,6 +158,11 @@ void onMotion(int x, int y)
 	if(left_mouse)
 	{
 		slider1->mouseDrag(mouseX, mouseY);
+		slider2->mouseDrag(mouseX, mouseY);
+		slider3->mouseDrag(mouseX, mouseY);
+		slider4->mouseDrag(mouseX, mouseY);
+		slider5->mouseDrag(mouseX, mouseY);
+		slider6->mouseDrag(mouseX, mouseY);
 	}
 }
 
@@ -818,6 +848,25 @@ void drawTree()
 	//glPopMatrix();
 }
 
+void renderStringToWindow(string str, int x, int y)
+{
+	
+	//glDisable(GL_LIGHTING);
+	glColor3f(0.0, 0.0, 0.0);
+	
+	glRasterPos2i(x, y);
+	stringstream  convert;
+	convert << str <<'\0';
+	string s = convert.str();
+	void *font = GLUT_BITMAP_9_BY_15;
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	//glEnable(GL_LIGHTING);
+}
+
 void drawButton(PushButton *button)
 {
 
@@ -846,27 +895,14 @@ void drawButton(PushButton *button)
 	glEnd();
 
 	glPopMatrix();
+
+	
+	
+	glColor3f(1.0f, 1.0f, 1.0f);
+	
+	renderStringToWindow("RAND", button->getX(), button->getY() + (button->getHeight() / 2));
 }
 
-
-void renderStringToWindow(string str, int x, int y)
-{
-	
-	glDisable(GL_LIGHTING);
-	glColor3f(1.0, 1.0, 1.0);
-	
-	glRasterPos2i(x, y);
-	stringstream  convert;
-	convert << str <<'\0';
-	string s = convert.str();
-	void *font = GLUT_BITMAP_9_BY_15;
-	for (string::iterator i = s.begin(); i != s.end(); ++i)
-	{
-		char c = *i;
-		glutBitmapCharacter(font, c);
-	}
-	glEnable(GL_LIGHTING);
-}
 
 
 void drawSlider(Slider *slider)
@@ -912,7 +948,8 @@ void drawSlider(Slider *slider)
 	glColor3f(1.0f, 1.0f, 1.0f);
 	
 	renderStringToWindow(slider->getLabel(), slider->getX(), slider->getY());
-	renderStringToWindow(to_string(slider->getValue()), slider->getX() + slider->getWidth() - 9, slider->getY());
+	//renderStringToWindow(to_string(slider->getValue()), slider->getX() + slider->getWidth() - 9, slider->getY());
+	renderStringToWindow(to_string(slider->getValue()), slider->getX() + slider->sliderBarPos(), slider->getY() + slider->getHeight() - 5);
 
 	
 
@@ -924,17 +961,29 @@ void draw2Dthings()
 {
 	
 	glDisable(GL_LIGHTING);
-	drawButton(button1);
+	
+		glPushMatrix();
+		glTranslatef(0, 0, -5.1f);
+		glBegin(GL_QUADS);
+			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
+			glVertex2f(0.0, 0.0);
+			glVertex2f(105.0, 0.0);
+			glVertex2f(105, 500);
+			glVertex2f(0.0, 500);
+		glEnd();
+	glPopMatrix();
+	
+	drawButton(button4);
+	drawButton(button5);
+	drawButton(button6);
 	drawSlider(slider1);
-	/*
-	glBegin(GL_QUADS);
-	glColor3f(1.0f, 0.0f, 0.0);
-	glVertex2f(0.0, 0.0);
-	glVertex2f(10.0, 0.0);
-	glVertex2f(10.0, 10.0);
-	glVertex2f(0.0, 10.0);
-	glEnd();
-	*/
+	drawSlider(slider2);
+	drawSlider(slider3);
+	drawSlider(slider4);
+	drawSlider(slider5);
+	drawSlider(slider6);
+	
+
 	glEnable(GL_LIGHTING);
 }
 

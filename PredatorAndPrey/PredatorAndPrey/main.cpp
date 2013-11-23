@@ -156,10 +156,10 @@ float incidenceAngle(vec3 v1, vec3 v2)
 }
 
 
-Node *treeRecurse(Node *currentNode, Node *parentNode, vec3 position, vec3 direction, float width, int depth)
+Node *treeRecurse(Node *currentNode, float width, int depth)
 {
 	int branches=4;
-	float lengthShrink=0.5;
+	float lengthShrink=0.8;
 	float widthShrink=0.7;
 	float spread = 2;
 	Node *current = currentNode;
@@ -178,29 +178,17 @@ Node *treeRecurse(Node *currentNode, Node *parentNode, vec3 position, vec3 direc
 			
 			vec3 change;
 			vec3 newDirection;
-
-			vec3 nextPosition = vec3(currentNode->getPosition().x+newX, currentNode->getPosition().y+newY, currentNode->getPosition().z + currentNode->getDirection().z);
 			
-			vec3 nextDirection = nextPosition - currentNode->getPosition();
-			nextDirection = vec3(-nextDirection.x, -nextDirection.y, nextDirection.z);
+			vec3 nextPosition = vec3(currentNode->getPosition().x+currentNode->getDirection().x, currentNode->getPosition().y+currentNode->getDirection().y, currentNode->getPosition().z + currentNode->getDirection().z);
 			
-			change = normalize(vec3(newY, newX, 0)) * spread;
-			if(!parentNode)
-			{
-				newDirection = currentNode->getDirection()+change;
-				newDirection = newDirection * lengthShrink;
-				newPosition = currentNode->getDirection();
-			}
-			else
-			{
-				newDirection = nextDirection;
-				newPosition = nextPosition;
-			}
-			//newPosition = normalize(newPosition) * shrink;
+			vec3 nextDirection = currentNode->getDirection() ;
+			
+			change = normalize(vec3(newX, newY, 0));
+			newDirection = nextDirection+normalize(change);
+			newDirection = normalize(newDirection) * currentNode->getHeight() * lengthShrink;
 
-			Node *nextBranch = current->addChild(newPosition, newDirection, width*widthShrink);
-			cout<<current->getNumChildren()<<'\n';
-			treeRecurse(nextBranch, current, newPosition, newDirection, width*widthShrink, depth-1);
+			Node *nextBranch = currentNode->addChild(newPosition, newDirection, width*widthShrink);
+			treeRecurse(nextBranch, width*widthShrink, depth-1);
 		}
 
 	}
@@ -219,59 +207,35 @@ void drawUpsideDownCone(float base, float height, float slices, float stack)
 	glPopMatrix();
 }
 
-void treeDraw(Node *currentNode, Node *parentNode)
+void treeDraw(Node *currentNode)
 {
-	if(parentNode==NULL)
+	if(currentNode != NULL)
 	{
-		//glPushMatrix();
-		vec3 direction = currentNode->getDirection();
-		glTranslatef(0, 0, 0);
 		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
-		//drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
-		//
+
+		float angle;
+		vec3 orthogVec;
+
+			
+		glTranslatef(0, 0, currentNode->getHeight());
+			
 
 		Node *children = currentNode->getChildren();
 		Node *currentChild = children;
-		
+
 		while(currentChild)
 		{
-			treeDraw(currentChild, currentNode);
-			currentChild = currentChild->getSiblings();
-		}
-		glPopMatrix();
-	}
-	else
-	{
-		if(currentNode != NULL)
-		{
-			
-			//glTranslatef(currentNode->getDirection().x, currentNode->getDirection().y,  currentNode->getDirection().z);
-			
+				
 			glPushMatrix();
-			
-			glTranslatef(currentNode->getX() , currentNode->getY(), currentNode->getZ());
-			float angle = incidenceAngle(currentNode->getDirection(), parentNode->getDirection());
-			vec3 orthogVec = cross( parentNode->getDirection(), currentNode->getDirection());
-			
-			glRotatef(angle, -orthogVec.x,-orthogVec.y, orthogVec.z);
-			drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
-			
-			
-			
+			angle = incidenceAngle(currentChild->getDirection(), vec3(0, 0, 1));
+			orthogVec = cross(currentChild->getDirection(), vec3(0, 0, 1));
+			glRotatef(angle, orthogVec.x, orthogVec.y, orthogVec.z);
+
+			treeDraw(currentChild);
+				
 			glPopMatrix();
+			currentChild = currentChild->getSiblings();
 
-			Node *children = currentNode->getChildren();
-			Node *currentChild = children;
-			
-			while(currentChild)
-			{
-				treeDraw(currentChild, currentNode);
-				currentChild = currentChild->getSiblings();
-			}
-			
-		
-
-			
 		}
 	}
 }
@@ -291,9 +255,10 @@ void buildMyTree()
 	Node *head = new Node(vec3(0,0,0), vec3(0,0,3), startWidth);
 	Node *current = head;
 
-	myTree = treeRecurse(current, NULL, vec3(0,0,0), vec3(0,0,3), startWidth, depth);
+	myTree = treeRecurse(current, startWidth, depth);
 	
 }
+
 
 
 void drawTriangle(float *v1, float *v2, float *v3) 
@@ -398,6 +363,9 @@ void drawSphere(float x, float y, float z, float r)
 
 	glPopMatrix();
 }
+
+
+
 
 
 void setLighting()
@@ -844,18 +812,6 @@ void renderStringToWindow(string s)
 	}
 }
 
-
-void drawTree()
-{
-	
-	glColor3f(0.3, 0.3, 0.3);
-	
-	//glPushMatrix();
-	glTranslatef(0,0,0);
-	
-	//glPopMatrix();
-}
-
 void drawButton(PushButton *button)
 {
 
@@ -970,7 +926,7 @@ void drawScene() {
 	glRotatef(cam_x, 1, 0, 0);
 	glRotatef(cam_y, 0, 1, 0);
 	glRotatef(cam_z, 0, 0, 1);
-	treeDraw(myTree, NULL);
+	treeDraw(myTree);
 	glPopMatrix();
 
 	

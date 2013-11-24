@@ -40,6 +40,7 @@ public:
 	
 	int sliderBarPos();
 	int getSliderBarWidth();
+	int getMaxValue();
 
 
 };

@@ -16,6 +16,7 @@
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="PushButton.cpp" />
     <ClCompile Include="Slider.cpp" />
+    <ClCompile Include="SliderRandomPushButton.cpp" />
     <ClCompile Include="text3d.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -26,6 +27,7 @@
     <ClInclude Include="Node.h" />
     <ClInclude Include="PushButton.h" />
     <ClInclude Include="Settings.h" />
+    <ClInclude Include="SliderRandomPushButton.h" />
     <ClInclude Include="text3d.h" />
     <ClInclude Include="vec.h" />
   </ItemGroup>

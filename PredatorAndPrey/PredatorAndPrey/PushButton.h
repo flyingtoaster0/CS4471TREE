@@ -23,6 +23,7 @@ class PushButton : public Clickable
 
 	void setState(int state);
 	int getState();
+	virtual void Execute() = 0;
 
 public:
 	PushButton();

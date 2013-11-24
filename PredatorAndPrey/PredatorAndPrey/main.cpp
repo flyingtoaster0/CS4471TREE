@@ -15,6 +15,7 @@
 #include "mat.h"
 #include "PushButton.h"
 #include "Slider.h"
+#include "SliderRandomPushButton.h"
 
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -70,13 +71,13 @@ Slider *slider2 = new Slider(2, 150, 100, 30,"Light G", 0, 10);
 Slider *slider3 = new Slider(2, 200, 100, 30,"Light B1", 0, 10);
 
 Slider *sprout_num_slider = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10);
-PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
+SliderRandomPushButton *button4 = new SliderRandomPushButton(110, 250, 50, 30, "Random Num", sprout_num_slider);
 
 Slider *sprout_dir_slider = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10);
-PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
+SliderRandomPushButton *button5 = new SliderRandomPushButton(110, 300, 50, 30, "Random Dir", sprout_dir_slider);
 
 Slider *segment_len_slider = new Slider(2, 350, 100, 30,"Segment Len", 0, 10);
-PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
+SliderRandomPushButton *button6 = new SliderRandomPushButton(110, 350, 50, 30, "Random Len", segment_len_slider);
 
 
 typedef unsigned char   Bool;

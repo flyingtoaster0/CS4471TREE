@@ -80,6 +80,7 @@ vec3 Slider::getColor()
 
 void Slider::setValue(int value)
 {
+	printf("setting value");
 	this->value = value;
 }
 
@@ -97,6 +98,11 @@ int Slider::sliderBarPos()
 int Slider::getSliderBarWidth()
 {
 	return  width / max;
+}
+
+int Slider::getMaxValue()
+{
+	return max;
 }
 
 

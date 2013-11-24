@@ -15,6 +15,7 @@
 #include "mat.h"
 #include "PushButton.h"
 #include "Slider.h"
+#include <time.h>
 
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -68,7 +69,7 @@ float treeR, treeG, treeB;
 float widthShrink, lengthShrink;
 int startDepth, branches;
 float startWidth, startHeight;
-
+int randomOn;
 
 
 
@@ -97,6 +98,7 @@ Slider *segment_len_slider = new Slider(2, 350, 100, 30,"Segment Len", 0, 10);
 PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
 
+Slider *slider_randomOn = new Slider(2, 550, 100, 30,"Randomness", 0, 2);
 
 void setGlobalsFromSliders()
 {
@@ -114,8 +116,8 @@ void setGlobalsFromSliders()
 
 	startDepth = slider_startDepth->getValue();
 	branches = slider_branches->getValue();
-
-	cout<<lengthShrink;
+	
+	randomOn = 2 - slider_randomOn->getValue();
 }
 
 
@@ -199,6 +201,8 @@ void mouse(int button, int state, int x, int y)
 		sprout_num_slider->mouseDown(mouseX, mouseY);
 		sprout_dir_slider->mouseDown(mouseX, mouseY);
 		segment_len_slider->mouseDown(mouseX, mouseY);
+		
+		slider_randomOn->mouseDown(mouseX, mouseY);
 		left_mouse = true;
 	}
 	else if(state == 1) //Up
@@ -222,6 +226,8 @@ void mouse(int button, int state, int x, int y)
 		sprout_num_slider->mouseDown(mouseX, mouseY);
 		sprout_dir_slider->mouseDown(mouseX, mouseY);
 		segment_len_slider->mouseDown(mouseX, mouseY);
+		slider_randomOn->mouseDown(mouseX, mouseY);
+		
 		left_mouse = false;
 	}
 }
@@ -256,6 +262,7 @@ void onMotion(int x, int y)
 		sprout_num_slider->mouseDrag(mouseX, mouseY);
 		sprout_dir_slider->mouseDrag(mouseX, mouseY);
 		segment_len_slider->mouseDrag(mouseX, mouseY);
+		slider_randomOn->mouseDrag(mouseX, mouseY);
 	}
 }
 
@@ -270,7 +277,7 @@ float incidenceAngle(vec3 v1, vec3 v2)
 Node *treeRecurse(Node *currentNode, float width, int depth)
 {
 	//int branches=4;
-	float spread = 2;
+	//float spread = 2;
 	Node *current = currentNode;
 	//for(int i=0; i<depth; i++)
 	vec3 newPosition;
@@ -281,10 +288,18 @@ Node *treeRecurse(Node *currentNode, float width, int depth)
 		
 		for(int j=0; j<branches; j++)
 		{
-			float newX = cos((2 * PI) * (((float)j) / (float)branches));
-			float newY = sin((2 * PI) * (((float)j) / (float)branches));
-			float newZ = sin(j * PI / branches);
+			float newX = cos((2 * PI) * (((float)j) / (float)branches)) ;
+			float newY = sin((2 * PI) * (((float)j) / (float)branches)) ;
 			
+			float newZ = 0;
+
+			int p=rand();
+			if(randomOn)
+			{
+				newX *= (rand() % 10 + 1);
+				newY *= (rand() % 10 + 1);
+			}
+
 			vec3 change;
 			vec3 newDirection;
 			
@@ -292,7 +307,7 @@ Node *treeRecurse(Node *currentNode, float width, int depth)
 			
 			vec3 nextDirection = currentNode->getDirection() ;
 			
-			change = normalize(vec3(newX, newY, 0));
+			change = normalize(vec3(newX, newY, newZ));
 			newDirection = nextDirection+normalize(change);
 			newDirection = normalize(newDirection) * currentNode->getHeight() * lengthShrink;
 
@@ -1073,6 +1088,7 @@ void draw2Dthings()
 	drawSlider(slider_branches);
 	drawSlider(slider_widthShrink);
 	drawSlider(slider_lengthShrink);
+	drawSlider(slider_randomOn);
 
 
 
@@ -1106,11 +1122,6 @@ void drawScene() {
     
 	setLighting();
     
-	
-	
-	
-	
-
 
 
 	//drawTree();
@@ -1234,7 +1245,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-
+	srand(time(NULL));
 	settings = new Setting_list;
 	loadSettings(settings);
 	cam_z = settings->ZOOM_VALUE;

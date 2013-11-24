@@ -64,7 +64,7 @@ void Slider::mouseDrag(float x, float y)
 
 float Slider::calcXpercent(float x)
 {
-	return x / (this->x + this->width);
+	return (x - this->x) / this->width;
 }
 
 

@@ -41,6 +41,9 @@
 #define PAN_AMOUNT 0.3
 #define PI 3.1415926
 
+#define SLIDER_HEIGHT 20
+#define TREES_AMOUNT 5
+
 using namespace std;
 
 
@@ -64,6 +67,9 @@ Setting_list *settings;
 
 
 //----------GLOBAL VARIABLES------------
+Node *tree[TREES_AMOUNT];
+vec3 treeColor;
+vec3 leafColor;
 
 float treeR, treeG, treeB;
 float widthShrink, lengthShrink;
@@ -71,36 +77,37 @@ int startDepth, branches;
 float startWidth, startHeight;
 int randomOn;
 
+int treeNum;
 
 
 
-Slider *slider_treeR = new Slider(2, 100, 100, 30,"Tree R", 0, 10);
-Slider *slider_treeG = new Slider(2, 150, 100, 30,"Tree G", 0, 10);
-Slider *slider_treeB = new Slider(2, 200, 100, 30,"Tree B1", 0, 10);
 
-Slider *slider_startWidth = new Slider(2, 250, 100, 30,"Start W", 0, 10);
-Slider *slider_startHeight = new Slider(2, 300, 100, 30,"Start H", 0, 10);
+Slider *slider_treeNum = new Slider(2, 20, 100, SLIDER_HEIGHT,"Tree #", 0, TREES_AMOUNT);
 
-Slider *slider_startDepth = new Slider(2, 350, 100, 30,"Start Depth", 0, 10);
-Slider *slider_branches = new Slider(2, 400, 100, 30,"Branches", 0, 10);
+Slider *slider_treeR = new Slider(2, 100, 100, SLIDER_HEIGHT,"Tree R", 0, 10);
+Slider *slider_treeG = new Slider(2, 150, 100, SLIDER_HEIGHT,"Tree G", 0, 10);
+Slider *slider_treeB = new Slider(2, 200, 100, SLIDER_HEIGHT,"Tree B1", 0, 10);
 
-Slider *slider_widthShrink = new Slider(2, 450, 100, 30,"W Shrink", 0, 10);
-Slider *slider_lengthShrink = new Slider(2, 500, 100, 30,"H Shrink", 0, 10);
+Slider *slider_startWidth = new Slider(2, 250, 100, SLIDER_HEIGHT,"Start W", 0, 10);
+Slider *slider_startHeight = new Slider(2, 300, 100, SLIDER_HEIGHT,"Start H", 0, 10);
+
+Slider *slider_startDepth = new Slider(2, 350, 100, SLIDER_HEIGHT,"Start Depth", 0, 10);
+Slider *slider_branches = new Slider(2, 400, 100, SLIDER_HEIGHT,"Branches", 0, 10);
+
+Slider *slider_widthShrink = new Slider(2, 450, 100, SLIDER_HEIGHT,"W Shrink", 0, 10);
+Slider *slider_lengthShrink = new Slider(2, 500, 100, SLIDER_HEIGHT,"H Shrink", 0, 10);
+
+Slider *slider_randomOn = new Slider(2, 550, 100, SLIDER_HEIGHT,"Randomness", 0, 2);
 
 
-
-PushButton *button_update = new PushButton(110, 250, 50, 30, "Update");
+PushButton *button_update = new PushButton(110, 550, 50, SLIDER_HEIGHT, "Update");
 PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
 PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
 
-
-
-
 PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
 
-Slider *slider_randomOn = new Slider(2, 550, 100, 30,"Randomness", 0, 2);
 
 void setGlobalsFromSliders()
 {
@@ -108,6 +115,8 @@ void setGlobalsFromSliders()
 	treeG = (float)(slider_treeG->getValue())/10;
 	treeB = (float)(slider_treeB->getValue())/10;
 	
+	treeColor = vec3(treeR, treeG, treeB);
+	leafColor = vec3(treeR, treeG, treeB);
 
 	startWidth = (float)(slider_startWidth->getValue())/10;
 	startHeight = slider_startHeight->getValue();
@@ -120,7 +129,10 @@ void setGlobalsFromSliders()
 	branches = slider_branches->getValue();
 	
 	randomOn = slider_randomOn->getValue() == 1 ? 0 : 1;
-	cout<<randomOn;
+
+	treeNum = slider_treeNum->getValue() - 1;
+
+	cout<<treeNum;
 }
 
 
@@ -129,6 +141,7 @@ void initGlobals()
 	treeR = 1;
 	treeG = 1;
 	treeB = 1;
+	treeColor = vec3(treeR, treeG, treeB);
 	startWidth = 0.3;
 	startHeight = 3;
 	widthShrink = 0.9;
@@ -136,6 +149,7 @@ void initGlobals()
 	startDepth = 3;
 	branches = 5;
 	randomOn=0;
+	treeNum=0;
 }
 
 
@@ -199,10 +213,9 @@ void mouse(int button, int state, int x, int y)
 		slider_widthShrink->mouseDown(mouseX, mouseY);
 		slider_lengthShrink->mouseDown(mouseX, mouseY);
 
-
-
-		
 		slider_randomOn->mouseDown(mouseX, mouseY);
+
+		slider_treeNum->mouseDown(mouseX, mouseY);
 
 		left_mouse = true;
 	}
@@ -259,6 +272,7 @@ void onMotion(int x, int y)
 
 
 		slider_randomOn->mouseDrag(mouseX, mouseY);
+		slider_treeNum->mouseDrag(mouseX, mouseY);
 
 
 	}
@@ -440,8 +454,8 @@ void treeDraw(Node *currentNode)
 {
 	if(currentNode)
 	{
-		
-		glColor3f(treeR, treeG, treeB);
+		vec3 treeColor = currentNode->getColor();
+		glColor3f(treeColor.x, treeColor.y, treeColor.z);
 		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
 
 		float angle;
@@ -470,7 +484,8 @@ void treeDraw(Node *currentNode)
 		}
 		if(currentNode->getNumChildren() == 0)
 		{
-			glColor3f(0, 0.6, 0.2);
+			vec3 leafColor = currentNode->getLeafColor();
+			glColor3f(leafColor.x, leafColor.y, leafColor.z);
 			drawSphere(0, 0, 0, 1, 1);
 		}
 	}
@@ -480,16 +495,13 @@ Node *myTree;
 
 void buildMyTree()
 {
-	//float startHeight=3;
-	//int branches=2;
-	//int depth=3;
-
 	setGlobalsFromSliders();
-//	Node *head = new Node(startWidth,startHeight);
 	Node *head = new Node(vec3(0,0,0), vec3(0,0,startHeight), startWidth);
 	Node *current = head;
-
-	myTree = treeRecurse(current, startWidth, startDepth);
+	current->setColor(treeColor);
+	current->setLeafColor(leafColor);
+	tree[treeNum] = treeRecurse(current, startWidth, startDepth);
+	//myTree = treeRecurse(current, startWidth, startDepth);
 	
 }
 
@@ -1110,6 +1122,7 @@ void draw2Dthings()
 	drawSlider(slider_widthShrink);
 	drawSlider(slider_lengthShrink);
 	drawSlider(slider_randomOn);
+	drawSlider(slider_treeNum);
 
 
 
@@ -1146,7 +1159,17 @@ void drawScene() {
 	glRotatef(cam_x, 1, 0, 0);
 	glRotatef(cam_y, 0, 1, 0);
 	glRotatef(cam_z, 0, 0, 1);
-	treeDraw(myTree);
+
+	for(int i=0; i<TREES_AMOUNT; i++)
+	{
+		glPushMatrix();
+		float newX = cos((2 * PI) * (((float)i) / (float)TREES_AMOUNT)) * 25 ;
+		float newY = sin((2 * PI) * (((float)i) / (float)TREES_AMOUNT)) * 25;
+		glTranslatef(newX, newY, 0);
+
+		treeDraw(tree[i]);
+		glPopMatrix();
+	}
 	glPopMatrix();
 
 	
@@ -1273,7 +1296,7 @@ int main(int argc, char** argv) {
 	
 	//buildMyTree();
 
-	glutCreateWindow("PREDATOR VS. PREY 2 - MACHINE FOR PIGS");
+	glutCreateWindow("NATURE SIMULATOR 2014 - PROFESSIONAL EDITION PLATINUM");
 	initRendering();
 
 	//Set handler functions

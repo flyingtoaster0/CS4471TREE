@@ -12,6 +12,8 @@ class Node
 	Node *sibling;
 	vec3 position;
 	vec3 direction;
+	vec3 color;
+	vec3 leafColor;
 
 public:
 	Node();
@@ -35,5 +37,11 @@ public:
 	float getZ();
 	vec3 getPosition();
 	vec3 getDirection();
+	
+	void setColor(vec3 color);
+	void setLeafColor(vec3 leafColor);
+	
+	vec3 getColor();
+	vec3 getLeafColor();
 
 };

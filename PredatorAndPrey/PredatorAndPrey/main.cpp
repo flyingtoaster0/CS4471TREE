@@ -331,60 +331,6 @@ void drawUpsideDownCone(float base, float height, float slices, float stack)
 	glPopMatrix();
 }
 
-void treeDraw(Node *currentNode)
-{
-	if(currentNode != NULL)
-	{
-		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
-
-		float angle;
-		vec3 orthogVec;
-
-			
-		glTranslatef(0, 0, currentNode->getHeight());
-			
-
-		Node *children = currentNode->getChildren();
-		Node *currentChild = children;
-
-		while(currentChild)
-		{
-				
-			glPushMatrix();
-			angle = incidenceAngle(currentChild->getDirection(), vec3(0, 0, 1));
-			orthogVec = cross(currentChild->getDirection(), vec3(0, 0, 1));
-			glRotatef(angle, orthogVec.x, orthogVec.y, orthogVec.z);
-
-			treeDraw(currentChild);
-				
-			glPopMatrix();
-			currentChild = currentChild->getSiblings();
-
-		}
-	}
-}
-
-Node *myTree;
-
-void buildMyTree()
-{
-	//float startHeight=3;
-	//int branches=2;
-	//int depth=3;
-
-	setGlobalsFromSliders();
-//	Node *head = new Node(startWidth,startHeight);
-	Node *head = new Node(vec3(0,0,0), vec3(0,0,startHeight), startWidth);
-	Node *current = head;
-
-	myTree = treeRecurse(current, startWidth, startDepth);
-	
-}
-
-void setButtonActions()
-{
-	button_update->setAction(buildMyTree);
-}
 
 void drawTriangle(float *v1, float *v2, float *v3) 
 {
@@ -435,12 +381,12 @@ void subdivide(vec3 v1, vec3 v2, vec3 v3, float r, long depth)
 
 
 
-void drawSphere(float x, float y, float z, float r)
+void drawSphere(float x, float y, float z, float r, int depth)
 {
 	glPushMatrix();
 	glTranslatef(x,y,z);
 
-	float depth=3;
+	//float depth=3;
 	vec3 v1;
 	vec3 v2;
 	vec3 v3;
@@ -491,6 +437,70 @@ void drawSphere(float x, float y, float z, float r)
 
 
 
+void treeDraw(Node *currentNode)
+{
+	if(currentNode)
+	{
+		
+		glColor3f(treeR, treeG, treeB);
+		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
+
+		float angle;
+		vec3 orthogVec;
+
+			
+		glTranslatef(0, 0, currentNode->getHeight());
+			
+
+		Node *children = currentNode->getChildren();
+		Node *currentChild = children;
+
+		while(currentChild)
+		{
+				
+			glPushMatrix();
+			angle = incidenceAngle(currentChild->getDirection(), vec3(0, 0, 1));
+			orthogVec = cross(currentChild->getDirection(), vec3(0, 0, 1));
+			glRotatef(angle, orthogVec.x, orthogVec.y, orthogVec.z);
+
+			treeDraw(currentChild);
+				
+			glPopMatrix();
+			currentChild = currentChild->getSiblings();
+
+		}
+		if(currentNode->getNumChildren() == 0)
+		{
+			glColor3f(0, 0.6, 0.2);
+			drawSphere(0, 0, 0, 1, 1);
+		}
+	}
+}
+
+Node *myTree;
+
+void buildMyTree()
+{
+	//float startHeight=3;
+	//int branches=2;
+	//int depth=3;
+
+	setGlobalsFromSliders();
+//	Node *head = new Node(startWidth,startHeight);
+	Node *head = new Node(vec3(0,0,0), vec3(0,0,startHeight), startWidth);
+	Node *current = head;
+
+	myTree = treeRecurse(current, startWidth, startDepth);
+	
+}
+
+void setButtonActions()
+{
+	button_update->setAction(buildMyTree);
+}
+
+
+
 
 
 void setLighting()
@@ -521,7 +531,7 @@ void setLighting()
 
 
 	glColor3f(1.0, 1.0, 1.0);
-	drawSphere(lightPos0[0], lightPos0[1], lightPos0[2], 0.2);
+	drawSphere(lightPos0[0], lightPos0[1], lightPos0[2], 0.2, 3);
 
 }
 
@@ -1125,7 +1135,6 @@ void drawScene() {
 
 
 	//drawTree();
-	glColor3f(treeR, treeG, treeB);
 	glPushMatrix();
 	glTranslatef(0, 0, -10);
 	glRotatef(cam_x, 1, 0, 0);

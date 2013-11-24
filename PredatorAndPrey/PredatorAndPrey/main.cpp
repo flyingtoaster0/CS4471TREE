@@ -100,21 +100,24 @@ PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
 void setGlobalsFromSliders()
 {
-	treeR = slider_treeR->getValue()/10;
-	treeG = slider_treeG->getValue()/10;
-	treeB = slider_treeB->getValue()/10;
+	treeR = (float)(slider_treeR->getValue())/10;
+	treeG = (float)(slider_treeG->getValue())/10;
+	treeB = (float)(slider_treeB->getValue())/10;
 	
 
-	startWidth = slider_startWidth->getValue();
+	startWidth = (float)(slider_startWidth->getValue())/10;
 	startHeight = slider_startHeight->getValue();
 	
-	widthShrink = 1 - slider_widthShrink->getValue() / 10;
-	lengthShrink = 1 - slider_lengthShrink->getValue() / 10;
+	widthShrink = 1.1 - (float)(slider_widthShrink->getValue()) / 10;
+	lengthShrink = 1.1 - (float)(slider_lengthShrink->getValue()) / 10;
 
 
 	startDepth = slider_startDepth->getValue();
 	branches = slider_branches->getValue();
+
+	cout<<lengthShrink;
 }
+
 
 void initGlobals()
 {
@@ -128,8 +131,6 @@ void initGlobals()
 	startDepth = 3;
 	branches = 5;
 }
-
-
 
 
 
@@ -352,11 +353,11 @@ Node *myTree;
 
 void buildMyTree()
 {
-	float startHeight=3;
-	int branches=2;
-	int depth=3;
+	//float startHeight=3;
+	//int branches=2;
+	//int depth=3;
 
-	
+	setGlobalsFromSliders();
 //	Node *head = new Node(startWidth,startHeight);
 	Node *head = new Node(vec3(0,0,0), vec3(0,0,startHeight), startWidth);
 	Node *current = head;
@@ -365,7 +366,10 @@ void buildMyTree()
 	
 }
 
-
+void setButtonActions()
+{
+	button_update->setAction(buildMyTree);
+}
 
 void drawTriangle(float *v1, float *v2, float *v3) 
 {
@@ -1110,7 +1114,7 @@ void drawScene() {
 
 
 	//drawTree();
-	glColor3f(0.0, 0.0, 1.0);
+	glColor3f(treeR, treeG, treeB);
 	glPushMatrix();
 	glTranslatef(0, 0, -10);
 	glRotatef(cam_x, 1, 0, 0);
@@ -1237,10 +1241,11 @@ int main(int argc, char** argv) {
 
 
 	initGlobals();
+	setButtonActions();
 
 	initFieldObjects();
 	
-	buildMyTree();
+	//buildMyTree();
 
 	glutCreateWindow("PREDATOR VS. PREY 2 - MACHINE FOR PIGS");
 	initRendering();

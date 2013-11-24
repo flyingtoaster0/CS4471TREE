@@ -28,7 +28,7 @@ void PushButton::mouseUp(float x, float y)
 {
 	if(getState() == DOWN && overlap(x,y))
 	{
-		//std::cout<<"Shit got clicked, yo"<<'\n';
+		this->executeAction();
 	}
 	setState(UP);
 	setColor(upColor);
@@ -55,3 +55,13 @@ vec3 PushButton::getColor()
 	return this->color;
 }
 
+
+void PushButton::setAction(void (*action)())
+{
+	this->action = action;
+}
+
+void PushButton::executeAction()
+{
+	this->action();
+}

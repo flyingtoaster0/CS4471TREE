@@ -88,10 +88,14 @@ Slider *slider_widthShrink = new Slider(2, 450, 100, 30,"W Shrink", 0, 10);
 Slider *slider_lengthShrink = new Slider(2, 500, 100, 30,"H Shrink", 0, 10);
 
 
+
 PushButton *button_update = new PushButton(110, 250, 50, 30, "Update");
 PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
 PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
+
+
+
 
 PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
@@ -194,8 +198,10 @@ void mouse(int button, int state, int x, int y)
 		slider_lengthShrink->mouseDown(mouseX, mouseY);
 
 
+
 		
 		slider_randomOn->mouseDown(mouseX, mouseY);
+
 		left_mouse = true;
 	}
 	else if(state == 1) //Up
@@ -203,18 +209,19 @@ void mouse(int button, int state, int x, int y)
 		button_update->mouseUp(mouseX, mouseY);
 		button5->mouseUp(mouseX, mouseY);
 		button6->mouseUp(mouseX, mouseY);
-		slider_treeR->mouseDown(mouseX, mouseY);
-		slider_treeG->mouseDown(mouseX, mouseY);
-		slider_treeB->mouseDown(mouseX, mouseY);
+		slider_treeR->mouseUp(mouseX, mouseY);
+		slider_treeG->mouseUp(mouseX, mouseY);
+		slider_treeB->mouseUp(mouseX, mouseY);
 
-		slider_startWidth->mouseDown(mouseX, mouseY);
-		slider_startHeight->mouseDown(mouseX, mouseY);
+		slider_startWidth->mouseUp(mouseX, mouseY);
+		slider_startHeight->mouseUp(mouseX, mouseY);
 
-		slider_startDepth->mouseDown(mouseX, mouseY);
-		slider_branches->mouseDown(mouseX, mouseY);
+		slider_startDepth->mouseUp(mouseX, mouseY);
+		slider_branches->mouseUp(mouseX, mouseY);
 
-		slider_widthShrink->mouseDown(mouseX, mouseY);
-		slider_lengthShrink->mouseDown(mouseX, mouseY);
+		slider_widthShrink->mouseUp(mouseX, mouseY);
+		slider_lengthShrink->mouseUp(mouseX, mouseY);
+
 
 		slider_randomOn->mouseDown(mouseX, mouseY);
 		
@@ -248,7 +255,10 @@ void onMotion(int x, int y)
 		slider_widthShrink->mouseDrag(mouseX, mouseY);
 		slider_lengthShrink->mouseDrag(mouseX, mouseY);
 
+
 		slider_randomOn->mouseDrag(mouseX, mouseY);
+
+
 	}
 }
 
@@ -316,6 +326,7 @@ void drawUpsideDownCone(float base, float height, float slices, float stack)
 
 	glPopMatrix();
 }
+
 
 
 void drawTriangle(float *v1, float *v2, float *v3) 
@@ -479,14 +490,6 @@ void buildMyTree()
 	myTree = treeRecurse(current, startWidth, startDepth);
 	
 }
-
-void setButtonActions()
-{
-	button_update->setAction(buildMyTree);
-}
-
-
-
 
 
 void setLighting()
@@ -946,6 +949,24 @@ void drawTree()
 	//glPopMatrix();
 }
 
+
+void setButtonActions()
+{
+	button_update->setAction(buildMyTree);
+	button5->setAction(buildMyTree);
+	button6->setAction(buildMyTree);
+	slider_branches->setAction(buildMyTree);
+	slider_startDepth->setAction(buildMyTree);
+	slider_widthShrink->setAction(buildMyTree);
+	slider_lengthShrink->setAction(buildMyTree);
+	slider_startHeight->setAction(buildMyTree);
+	slider_startWidth->setAction(buildMyTree);
+	slider_treeB->setAction(buildMyTree);
+	slider_treeG->setAction(buildMyTree);
+	slider_treeR->setAction(buildMyTree);
+
+}
+
 void renderStringToWindow(string str, int x, int y)
 {
 	
@@ -1055,6 +1076,8 @@ void drawSlider(Slider *slider)
 }
 
 
+
+
 void draw2Dthings()
 {
 	glDisable(GL_LIGHTING);
@@ -1086,11 +1109,6 @@ void draw2Dthings()
 	drawSlider(slider_randomOn);
 
 
-
-	//drawSlider(sprout_num_slider);
-	//drawSlider(sprout_dir_slider);
-	//drawSlider(segment_len_slider);
-	
 
 	glEnable(GL_LIGHTING);
 }

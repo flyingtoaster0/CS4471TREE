@@ -47,7 +47,14 @@ void Slider::mouseDown(float x, float y)
 
 void Slider::mouseUp(float x, float y)
 {
+	if (this->clicked && overlap(x,y))
+	{
 		this->clicked = false;
+		this->action();
+		printf("%s", this->getLabel());
+	}
+	
+		
 }
 
 void Slider::mouseDrag(float x, float y)

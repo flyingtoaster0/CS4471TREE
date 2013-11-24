@@ -24,7 +24,6 @@ class PushButton : public Clickable
 	void setState(int state);
 	int getState();
 
-	void (*action)();
 
 public:
 	PushButton();
@@ -37,8 +36,6 @@ public:
 	
 	vec3 getColor();
 
-	void setAction(void (*action)());
-	void executeAction();
 };
 
 #endif

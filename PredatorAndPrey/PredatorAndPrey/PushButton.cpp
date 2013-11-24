@@ -59,14 +59,3 @@ vec3 PushButton::getColor()
 {
 	return this->color;
 }
-
-
-void PushButton::setAction(void (*action)())
-{
-	this->action = action;
-}
-
-void PushButton::executeAction()
-{
-	this->action();
-}

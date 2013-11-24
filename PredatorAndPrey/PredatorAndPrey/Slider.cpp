@@ -85,7 +85,7 @@ void Slider::setValue(int value)
 
 int Slider::getValue()
 {
-	return this->value;
+	return this->value + 1;
 }
 
 

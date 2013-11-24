@@ -24,6 +24,8 @@ class PushButton : public Clickable
 	void setState(int state);
 	int getState();
 
+	void (*action)();
+
 public:
 	PushButton();
 	PushButton(float x, float y, float width, float height, std::string label);
@@ -34,6 +36,9 @@ public:
 	void mouseUp(float x, float y);
 	
 	vec3 getColor();
+
+	void setAction(void (*action)());
+	void executeAction();
 };
 
 #endif

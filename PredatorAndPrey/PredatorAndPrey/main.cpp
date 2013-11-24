@@ -15,6 +15,7 @@
 #include "mat.h"
 #include "PushButton.h"
 #include "Slider.h"
+#include <time.h>
 
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -62,21 +63,75 @@ float _scale = 0.9f;
 Setting_list *settings;
 
 
+//----------GLOBAL VARIABLES------------
+
+float treeR, treeG, treeB;
+float widthShrink, lengthShrink;
+int startDepth, branches;
+float startWidth, startHeight;
+int randomOn;
 
 
-int testvar = 0;
-Slider *slider1 = new Slider(2, 100, 100, 30,"Light R", 0, 10, &testvar);
-Slider *slider2 = new Slider(2, 150, 100, 30,"Light G", 0, 10, &testvar);
-Slider *slider3 = new Slider(2, 200, 100, 30,"Light B", 0, 10, &testvar);
 
-Slider *sprout_num_slider = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10, &testvar);
+
+Slider *slider_treeR = new Slider(2, 100, 100, 30,"Tree R", 0, 10);
+Slider *slider_treeG = new Slider(2, 150, 100, 30,"Tree G", 0, 10);
+Slider *slider_treeB = new Slider(2, 200, 100, 30,"Tree B1", 0, 10);
+
+Slider *slider_startWidth = new Slider(2, 250, 100, 30,"Start W", 0, 10);
+Slider *slider_startHeight = new Slider(2, 300, 100, 30,"Start H", 0, 10);
+
+Slider *slider_startDepth = new Slider(2, 350, 100, 30,"Start Depth", 0, 10);
+Slider *slider_branches = new Slider(2, 400, 100, 30,"Branches", 0, 10);
+
+Slider *slider_widthShrink = new Slider(2, 450, 100, 30,"W Shrink", 0, 10);
+Slider *slider_lengthShrink = new Slider(2, 500, 100, 30,"H Shrink", 0, 10);
+
+
+PushButton *button_update = new PushButton(110, 250, 50, 30, "Update");
 PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
-Slider *sprout_dir_slider = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10, &testvar);
 PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
 
-Slider *segment_len_slider = new Slider(2, 350, 100, 30,"Segment Len", 0, 10, &testvar);
 PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
+
+
+Slider *slider_randomOn = new Slider(2, 550, 100, 30,"Randomness", 0, 2);
+
+void setGlobalsFromSliders()
+{
+	treeR = (float)(slider_treeR->getValue())/10;
+	treeG = (float)(slider_treeG->getValue())/10;
+	treeB = (float)(slider_treeB->getValue())/10;
+	
+
+	startWidth = (float)(slider_startWidth->getValue())/10;
+	startHeight = slider_startHeight->getValue();
+	
+	widthShrink = 1.1 - (float)(slider_widthShrink->getValue()) / 10;
+	lengthShrink = 1.1 - (float)(slider_lengthShrink->getValue()) / 10;
+
+
+	startDepth = slider_startDepth->getValue();
+	branches = slider_branches->getValue();
+	
+	randomOn = 2 - slider_randomOn->getValue();
+}
+
+
+void initGlobals()
+{
+	treeR = 1;
+	treeG = 1;
+	treeB = 1;
+	startWidth = 0.3;
+	startHeight = 3;
+	widthShrink = 0.9;
+	lengthShrink = 0.9;
+	startDepth = 3;
+	branches = 5;
+}
+
 
 
 typedef unsigned char   Bool;
@@ -120,28 +175,49 @@ void mouse(int button, int state, int x, int y)
 
 	if(state == 0) //Down
 	{
-		button4->mouseDown(mouseX, mouseY);
+		button_update->mouseDown(mouseX, mouseY);
 		button5->mouseDown(mouseX, mouseY);
 		button6->mouseDown(mouseX, mouseY);
-		slider1->mouseDown(mouseX, mouseY);
-		slider2->mouseDown(mouseX, mouseY);
-		slider3->mouseDown(mouseX, mouseY);
-		sprout_num_slider->mouseDown(mouseX, mouseY);
-		sprout_dir_slider->mouseDown(mouseX, mouseY);
-		segment_len_slider->mouseDown(mouseX, mouseY);
+		slider_treeR->mouseDown(mouseX, mouseY);
+		slider_treeG->mouseDown(mouseX, mouseY);
+		slider_treeB->mouseDown(mouseX, mouseY);
+
+
+		
+		slider_startWidth->mouseDown(mouseX, mouseY);
+		slider_startHeight->mouseDown(mouseX, mouseY);
+
+		slider_startDepth->mouseDown(mouseX, mouseY);
+		slider_branches->mouseDown(mouseX, mouseY);
+
+		slider_widthShrink->mouseDown(mouseX, mouseY);
+		slider_lengthShrink->mouseDown(mouseX, mouseY);
+
+
+		
+		slider_randomOn->mouseDown(mouseX, mouseY);
 		left_mouse = true;
 	}
 	else if(state == 1) //Up
 	{
-		button4->mouseUp(mouseX, mouseY);
+		button_update->mouseUp(mouseX, mouseY);
 		button5->mouseUp(mouseX, mouseY);
 		button6->mouseUp(mouseX, mouseY);
-		slider1->mouseUp(mouseX, mouseY);
-		slider2->mouseDown(mouseX, mouseY);
-		slider3->mouseDown(mouseX, mouseY);
-		sprout_num_slider->mouseDown(mouseX, mouseY);
-		sprout_dir_slider->mouseDown(mouseX, mouseY);
-		segment_len_slider->mouseDown(mouseX, mouseY);
+		slider_treeR->mouseDown(mouseX, mouseY);
+		slider_treeG->mouseDown(mouseX, mouseY);
+		slider_treeB->mouseDown(mouseX, mouseY);
+
+		slider_startWidth->mouseDown(mouseX, mouseY);
+		slider_startHeight->mouseDown(mouseX, mouseY);
+
+		slider_startDepth->mouseDown(mouseX, mouseY);
+		slider_branches->mouseDown(mouseX, mouseY);
+
+		slider_widthShrink->mouseDown(mouseX, mouseY);
+		slider_lengthShrink->mouseDown(mouseX, mouseY);
+
+		slider_randomOn->mouseDown(mouseX, mouseY);
+		
 		left_mouse = false;
 	}
 }
@@ -158,12 +234,21 @@ void onMotion(int x, int y)
 
 	if(left_mouse)
 	{
-		slider1->mouseDrag(mouseX, mouseY);
-		slider2->mouseDrag(mouseX, mouseY);
-		slider3->mouseDrag(mouseX, mouseY);
-		sprout_num_slider->mouseDrag(mouseX, mouseY);
-		sprout_dir_slider->mouseDrag(mouseX, mouseY);
-		segment_len_slider->mouseDrag(mouseX, mouseY);
+		slider_treeR->mouseDrag(mouseX, mouseY);
+		slider_treeG->mouseDrag(mouseX, mouseY);
+		slider_treeB->mouseDrag(mouseX, mouseY);
+
+		
+		slider_startWidth->mouseDrag(mouseX, mouseY);
+		slider_startHeight->mouseDrag(mouseX, mouseY);
+
+		slider_startDepth->mouseDrag(mouseX, mouseY);
+		slider_branches->mouseDrag(mouseX, mouseY);
+
+		slider_widthShrink->mouseDrag(mouseX, mouseY);
+		slider_lengthShrink->mouseDrag(mouseX, mouseY);
+
+		slider_randomOn->mouseDrag(mouseX, mouseY);
 	}
 }
 
@@ -177,10 +262,8 @@ float incidenceAngle(vec3 v1, vec3 v2)
 
 Node *treeRecurse(Node *currentNode, float width, int depth)
 {
-	int branches=4;
-	float lengthShrink=0.8;
-	float widthShrink=0.7;
-	float spread = 2;
+	//int branches=4;
+	//float spread = 2;
 	Node *current = currentNode;
 	//for(int i=0; i<depth; i++)
 	vec3 newPosition;
@@ -191,10 +274,18 @@ Node *treeRecurse(Node *currentNode, float width, int depth)
 		
 		for(int j=0; j<branches; j++)
 		{
-			float newX = cos((2 * PI) * (((float)j) / (float)branches));
-			float newY = sin((2 * PI) * (((float)j) / (float)branches));
-			float newZ = sin(j * PI / branches);
+			float newX = cos((2 * PI) * (((float)j) / (float)branches)) ;
+			float newY = sin((2 * PI) * (((float)j) / (float)branches)) ;
 			
+			float newZ = 0;
+
+			int p=rand();
+			if(randomOn)
+			{
+				newX *= (rand() % 10 + 1);
+				newY *= (rand() % 10 + 1);
+			}
+
 			vec3 change;
 			vec3 newDirection;
 			
@@ -202,7 +293,7 @@ Node *treeRecurse(Node *currentNode, float width, int depth)
 			
 			vec3 nextDirection = currentNode->getDirection() ;
 			
-			change = normalize(vec3(newX, newY, 0));
+			change = normalize(vec3(newX, newY, newZ));
 			newDirection = nextDirection+normalize(change);
 			newDirection = normalize(newDirection) * currentNode->getHeight() * lengthShrink;
 
@@ -225,59 +316,6 @@ void drawUpsideDownCone(float base, float height, float slices, float stack)
 
 	glPopMatrix();
 }
-
-void treeDraw(Node *currentNode)
-{
-	if(currentNode != NULL)
-	{
-		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
-
-		float angle;
-		vec3 orthogVec;
-
-			
-		glTranslatef(0, 0, currentNode->getHeight());
-			
-
-		Node *children = currentNode->getChildren();
-		Node *currentChild = children;
-
-		while(currentChild)
-		{
-				
-			glPushMatrix();
-			angle = incidenceAngle(currentChild->getDirection(), vec3(0, 0, 1));
-			orthogVec = cross(currentChild->getDirection(), vec3(0, 0, 1));
-			glRotatef(angle, orthogVec.x, orthogVec.y, orthogVec.z);
-
-			treeDraw(currentChild);
-				
-			glPopMatrix();
-			currentChild = currentChild->getSiblings();
-
-		}
-	}
-}
-
-Node *myTree;
-
-void buildMyTree()
-{
-	float startWidth=0.5;
-	float startHeight=3;
-	int branches=2;
-	int depth=3;
-	int shrink=0.5;
-
-	
-//	Node *head = new Node(startWidth,startHeight);
-	Node *head = new Node(vec3(0,0,0), vec3(0,0,3), startWidth);
-	Node *current = head;
-
-	myTree = treeRecurse(current, startWidth, depth);
-	
-}
-
 
 
 void drawTriangle(float *v1, float *v2, float *v3) 
@@ -329,12 +367,12 @@ void subdivide(vec3 v1, vec3 v2, vec3 v3, float r, long depth)
 
 
 
-void drawSphere(float x, float y, float z, float r)
+void drawSphere(float x, float y, float z, float r, int depth)
 {
 	glPushMatrix();
 	glTranslatef(x,y,z);
 
-	float depth=3;
+	//float depth=3;
 	vec3 v1;
 	vec3 v2;
 	vec3 v3;
@@ -385,6 +423,70 @@ void drawSphere(float x, float y, float z, float r)
 
 
 
+void treeDraw(Node *currentNode)
+{
+	if(currentNode)
+	{
+		
+		glColor3f(treeR, treeG, treeB);
+		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
+
+		float angle;
+		vec3 orthogVec;
+
+			
+		glTranslatef(0, 0, currentNode->getHeight());
+			
+
+		Node *children = currentNode->getChildren();
+		Node *currentChild = children;
+
+		while(currentChild)
+		{
+				
+			glPushMatrix();
+			angle = incidenceAngle(currentChild->getDirection(), vec3(0, 0, 1));
+			orthogVec = cross(currentChild->getDirection(), vec3(0, 0, 1));
+			glRotatef(angle, orthogVec.x, orthogVec.y, orthogVec.z);
+
+			treeDraw(currentChild);
+				
+			glPopMatrix();
+			currentChild = currentChild->getSiblings();
+
+		}
+		if(currentNode->getNumChildren() == 0)
+		{
+			glColor3f(0, 0.6, 0.2);
+			drawSphere(0, 0, 0, 1, 1);
+		}
+	}
+}
+
+Node *myTree;
+
+void buildMyTree()
+{
+	//float startHeight=3;
+	//int branches=2;
+	//int depth=3;
+
+	setGlobalsFromSliders();
+//	Node *head = new Node(startWidth,startHeight);
+	Node *head = new Node(vec3(0,0,0), vec3(0,0,startHeight), startWidth);
+	Node *current = head;
+
+	myTree = treeRecurse(current, startWidth, startDepth);
+	
+}
+
+void setButtonActions()
+{
+	button_update->setAction(buildMyTree);
+}
+
+
+
 
 
 void setLighting()
@@ -415,7 +517,7 @@ void setLighting()
 
 
 	glColor3f(1.0, 1.0, 1.0);
-	drawSphere(lightPos0[0], lightPos0[1], lightPos0[2], 0.2);
+	drawSphere(lightPos0[0], lightPos0[1], lightPos0[2], 0.2, 3);
 
 }
 
@@ -896,7 +998,7 @@ void drawButton(PushButton *button)
 	
 	glColor3f(1.0f, 1.0f, 1.0f);
 	
-	renderStringToWindow("RAND", button->getX(), button->getY() + (button->getHeight() / 2));
+	renderStringToWindow(button->getLabel(), button->getX(), button->getY() + (button->getHeight() / 2));
 }
 
 
@@ -955,7 +1057,6 @@ void drawSlider(Slider *slider)
 
 void draw2Dthings()
 {
-	printf("%d" , testvar);
 	glDisable(GL_LIGHTING);
 	
 		glPushMatrix();
@@ -969,15 +1070,26 @@ void draw2Dthings()
 		glEnd();
 	glPopMatrix();
 	
-	drawButton(button4);
+	drawButton(button_update);
 	drawButton(button5);
 	drawButton(button6);
-	drawSlider(slider1);
-	drawSlider(slider2);
-	drawSlider(slider3);
-	drawSlider(sprout_num_slider);
-	drawSlider(sprout_dir_slider);
-	drawSlider(segment_len_slider);
+	drawSlider(slider_treeR);
+	drawSlider(slider_treeG);
+	drawSlider(slider_treeB);
+
+	drawSlider(slider_startWidth);
+	drawSlider(slider_startHeight);
+	drawSlider(slider_startDepth);
+	drawSlider(slider_branches);
+	drawSlider(slider_widthShrink);
+	drawSlider(slider_lengthShrink);
+	drawSlider(slider_randomOn);
+
+
+
+	//drawSlider(sprout_num_slider);
+	//drawSlider(sprout_dir_slider);
+	//drawSlider(segment_len_slider);
 	
 
 	glEnable(GL_LIGHTING);
@@ -1005,15 +1117,9 @@ void drawScene() {
     
 	setLighting();
     
-	
-	
-	
-	
-
 
 
 	//drawTree();
-	glColor3f(0.0, 0.0, 1.0);
 	glPushMatrix();
 	glTranslatef(0, 0, -10);
 	glRotatef(cam_x, 1, 0, 0);
@@ -1133,14 +1239,18 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
+	srand(time(NULL));
 	settings = new Setting_list;
 	loadSettings(settings);
 	cam_z = settings->ZOOM_VALUE;
 
 
+	initGlobals();
+	setButtonActions();
+
 	initFieldObjects();
 	
-	buildMyTree();
+	//buildMyTree();
 
 	glutCreateWindow("PREDATOR VS. PREY 2 - MACHINE FOR PIGS");
 	initRendering();

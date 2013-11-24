@@ -43,16 +43,6 @@
 using namespace std;
 
 
-float player1_x = 0;
-float player1_y = 0;
-float player1_xSpeed = 0;
-float player1_ySpeed = 0;
-float player1_radius = 0.5;
-float player1_budget = 10;//PLAYER_STARTING_BUDGET;
-
-float player2_x;
-float player2_y;
-float player2_radius = 0.5;
 
 float spinAngle = 0;
 float spinSpeed = 0;
@@ -67,16 +57,26 @@ GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f}; //white light
 GLfloat lightPos0[] = {0.0f, 0.0f, 1.5f, 1.0f}; 
 
 
-float _scale = 0.5f;
+float _scale = 0.9f;
 
-float *budget;
 Setting_list *settings;
 
 
 
 
-PushButton *button1 = new PushButton(2, 2, 50, 30);
-Slider *slider1 = new Slider(2, 100, 100, 30, 0, 10);
+
+Slider *slider1 = new Slider(2, 100, 100, 30,"Light R", 0, 10);
+Slider *slider2 = new Slider(2, 150, 100, 30,"Light G", 0, 10);
+Slider *slider3 = new Slider(2, 200, 100, 30,"Light B1", 0, 10);
+
+Slider *sprout_num_slider = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10);
+PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
+
+Slider *sprout_dir_slider = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10);
+PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
+
+Slider *segment_len_slider = new Slider(2, 350, 100, 30,"Segment Len", 0, 10);
+PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
 
 typedef unsigned char   Bool;
@@ -120,14 +120,28 @@ void mouse(int button, int state, int x, int y)
 
 	if(state == 0) //Down
 	{
-		button1->mouseDown(mouseX, mouseY);
+		button4->mouseDown(mouseX, mouseY);
+		button5->mouseDown(mouseX, mouseY);
+		button6->mouseDown(mouseX, mouseY);
 		slider1->mouseDown(mouseX, mouseY);
+		slider2->mouseDown(mouseX, mouseY);
+		slider3->mouseDown(mouseX, mouseY);
+		sprout_num_slider->mouseDown(mouseX, mouseY);
+		sprout_dir_slider->mouseDown(mouseX, mouseY);
+		segment_len_slider->mouseDown(mouseX, mouseY);
 		left_mouse = true;
 	}
 	else if(state == 1) //Up
 	{
-		button1->mouseUp(mouseX, mouseY);
+		button4->mouseUp(mouseX, mouseY);
+		button5->mouseUp(mouseX, mouseY);
+		button6->mouseUp(mouseX, mouseY);
 		slider1->mouseUp(mouseX, mouseY);
+		slider2->mouseDown(mouseX, mouseY);
+		slider3->mouseDown(mouseX, mouseY);
+		sprout_num_slider->mouseDown(mouseX, mouseY);
+		sprout_dir_slider->mouseDown(mouseX, mouseY);
+		segment_len_slider->mouseDown(mouseX, mouseY);
 		left_mouse = false;
 	}
 }
@@ -145,6 +159,11 @@ void onMotion(int x, int y)
 	if(left_mouse)
 	{
 		slider1->mouseDrag(mouseX, mouseY);
+		slider2->mouseDrag(mouseX, mouseY);
+		slider3->mouseDrag(mouseX, mouseY);
+		sprout_num_slider->mouseDrag(mouseX, mouseY);
+		sprout_dir_slider->mouseDrag(mouseX, mouseY);
+		segment_len_slider->mouseDrag(mouseX, mouseY);
 	}
 }
 
@@ -801,15 +820,47 @@ void handleResize(int w, int h) {
 
 
 float _cameraAngle = 0.0f;
-
+/*
 void renderStringToWindow(string s)
 {
-	void *font = GLUT_BITMAP_HELVETICA_10;
+	void *font = GLUT_BITMAP_TIMES_ROMAN_24;
 	for (string::iterator i = s.begin(); i != s.end(); ++i)
 	{
 		char c = *i;
 		glutBitmapCharacter(font, c);
 	}
+}
+*/
+
+
+void drawTree()
+{
+	
+	glColor3f(0.3, 0.3, 0.3);
+	
+	//glPushMatrix();
+	glTranslatef(0,0,0);
+	
+	//glPopMatrix();
+}
+
+void renderStringToWindow(string str, int x, int y)
+{
+	
+	//glDisable(GL_LIGHTING);
+	glColor3f(0.0, 0.0, 0.0);
+	
+	glRasterPos2i(x, y);
+	stringstream  convert;
+	convert << str <<'\0';
+	string s = convert.str();
+	void *font = GLUT_BITMAP_9_BY_15;
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	//glEnable(GL_LIGHTING);
 }
 
 void drawButton(PushButton *button)
@@ -840,7 +891,14 @@ void drawButton(PushButton *button)
 	glEnd();
 
 	glPopMatrix();
+
+	
+	
+	glColor3f(1.0f, 1.0f, 1.0f);
+	
+	renderStringToWindow("RAND", button->getX(), button->getY() + (button->getHeight() / 2));
 }
+
 
 
 void drawSlider(Slider *slider)
@@ -876,25 +934,55 @@ void drawSlider(Slider *slider)
 	glVertex2f(button->getX(), button->getY() + button->getHeight());
 	*/
 	glEnd();
-
 	glPopMatrix();
+
+	
+	
+	
+
+	
+	glColor3f(1.0f, 1.0f, 1.0f);
+	
+	renderStringToWindow(slider->getLabel(), slider->getX(), slider->getY());
+	//renderStringToWindow(to_string(slider->getValue()), slider->getX() + slider->getWidth() - 9, slider->getY());
+	renderStringToWindow(to_string(slider->getValue()), slider->getX() + slider->sliderBarPos(), slider->getY() + slider->getHeight() - 5);
+
+	
+
+	
 }
 
 
 void draw2Dthings()
 {
-	drawButton(button1);
+	
+	glDisable(GL_LIGHTING);
+	
+		glPushMatrix();
+		glTranslatef(0, 0, -5.1f);
+		glBegin(GL_QUADS);
+			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
+			glVertex2f(0.0, 0.0);
+			glVertex2f(105.0, 0.0);
+			glVertex2f(105, 500);
+			glVertex2f(0.0, 500);
+		glEnd();
+	glPopMatrix();
+	
+	drawButton(button4);
+	drawButton(button5);
+	drawButton(button6);
 	drawSlider(slider1);
-	/*
-	glBegin(GL_QUADS);
-	glColor3f(1.0f, 0.0f, 0.0);
-	glVertex2f(0.0, 0.0);
-	glVertex2f(10.0, 0.0);
-	glVertex2f(10.0, 10.0);
-	glVertex2f(0.0, 10.0);
-	glEnd();
-	*/
+	drawSlider(slider2);
+	drawSlider(slider3);
+	drawSlider(sprout_num_slider);
+	drawSlider(sprout_dir_slider);
+	drawSlider(segment_len_slider);
+	
+
+	glEnable(GL_LIGHTING);
 }
+
 
 
 
@@ -917,10 +1005,15 @@ void drawScene() {
     
 	setLighting();
     
-	glColor3f(0.0, 0.0, 1.0);
-
 	
+	
+	
+	
+
+
+
 	//drawTree();
+	glColor3f(0.0, 0.0, 1.0);
 	glPushMatrix();
 	glTranslatef(0, 0, -10);
 	glRotatef(cam_x, 1, 0, 0);
@@ -977,7 +1070,7 @@ void drawScene() {
 	t3dDraw3D(s, -1, 0, 0.2f, 1.5f);
 	glPopMatrix();
 	*/
-
+	
 	glPopMatrix();
 
 
@@ -994,16 +1087,23 @@ void drawScene() {
 	glClear(GL_DEPTH_BUFFER_BIT);
 	
 
-	//For lighting the buttons
-	glEnable(GL_LIGHT1);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor0);
-	glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
+
+	glColor3f(1.0, 1.0, 1.0);
+	glPushMatrix();
+
+	
+	
+	
+	
+	glPopMatrix();
+
+
+
 
 	glNormal3f(0.0f, 0.0f, 1.0f);
 	GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 	draw2Dthings();
-	glDisable(GL_LIGHT1);
 
 	// Making sure we can render 3d again
 	glMatrixMode(GL_PROJECTION);
@@ -1037,7 +1137,7 @@ int main(int argc, char** argv) {
 	settings = new Setting_list;
 	loadSettings(settings);
 	cam_z = settings->ZOOM_VALUE;
-	budget = new float(settings->PLAYER_STARTING_BUDGET);//settings->PLAYER_STARTING_BUDGET;
+
 
 	initFieldObjects();
 	

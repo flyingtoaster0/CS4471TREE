@@ -8,9 +8,10 @@ class Clickable
 {
 protected:
 	float x, y, width, height;
+	std::string label;
 public:
 	Clickable();
-	Clickable(float x, float y, float height, float width);
+	Clickable(float x, float y, float height, float width, std::string label);
 
 	void mouseDown(float x, float y);
 	void mouseUp(float x, float y);
@@ -21,6 +22,10 @@ public:
 	float getY();
 	float getWidth();
 	float getHeight();
+	std::string getLabel();
+
+	
+	
 
 };
 

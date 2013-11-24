@@ -9,12 +9,13 @@ Clickable::Clickable()
 	this->height = 0;
 }
 
-Clickable::Clickable(float x, float y, float width, float height)
+Clickable::Clickable(float x, float y, float width, float height, std::string label)
 {
 	this->x = x;
 	this->y = y;
 	this->width = width;
 	this->height = height;
+	this->label = label;
 }
 
 bool Clickable::overlap(float x, float y)
@@ -31,3 +32,5 @@ float Clickable::getY() {return this->y;}
 
 float Clickable::getWidth() {return this->width;}
 float Clickable::getHeight() {return this->height;}
+
+std::string Clickable::getLabel() {return this->label;}

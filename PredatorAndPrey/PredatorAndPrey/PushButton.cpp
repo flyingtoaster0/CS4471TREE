@@ -6,7 +6,7 @@ PushButton::PushButton() : Clickable()
 
 }
 
-PushButton::PushButton(float x, float y, float width, float height) : Clickable(x, y, width, height)
+PushButton::PushButton(float x, float y, float width, float height, std::string label) : Clickable(x, y, width, height, label)
 {
 	// Hardcoded color. Change this later maybe
 
@@ -28,7 +28,7 @@ void PushButton::mouseUp(float x, float y)
 {
 	if(getState() == DOWN && overlap(x,y))
 	{
-		std::cout<<"Shit got clicked, yo"<<'\n';
+		//std::cout<<"Shit got clicked, yo"<<'\n';
 	}
 	setState(UP);
 	setColor(upColor);

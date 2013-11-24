@@ -19,6 +19,11 @@ void PushButton::mouseDown(float x, float y)
 {
 	if(overlap(x,y))
 	{
+		if (getState() == UP)
+		{
+			//dowork
+		}
+
 		setState(DOWN);
 		setColor(downColor);
 	}

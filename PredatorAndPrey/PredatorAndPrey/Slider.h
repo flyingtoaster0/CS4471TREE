@@ -15,7 +15,6 @@ class Slider : public Clickable
 	void setColor(vec3 color);
 
 	int max, min, value;
-
 	bool clicked;
 
 	float calcXpercent(float x);

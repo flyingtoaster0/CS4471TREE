@@ -88,13 +88,11 @@ Slider *slider_widthShrink = new Slider(2, 450, 100, 30,"W Shrink", 0, 10);
 Slider *slider_lengthShrink = new Slider(2, 500, 100, 30,"H Shrink", 0, 10);
 
 
-Slider *sprout_num_slider = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10);
 PushButton *button_update = new PushButton(110, 250, 50, 30, "Update");
+PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
-Slider *sprout_dir_slider = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10);
 PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
 
-Slider *segment_len_slider = new Slider(2, 350, 100, 30,"Segment Len", 0, 10);
 PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
 
@@ -196,11 +194,6 @@ void mouse(int button, int state, int x, int y)
 		slider_lengthShrink->mouseDown(mouseX, mouseY);
 
 
-
-
-		sprout_num_slider->mouseDown(mouseX, mouseY);
-		sprout_dir_slider->mouseDown(mouseX, mouseY);
-		segment_len_slider->mouseDown(mouseX, mouseY);
 		
 		slider_randomOn->mouseDown(mouseX, mouseY);
 		left_mouse = true;
@@ -223,9 +216,6 @@ void mouse(int button, int state, int x, int y)
 		slider_widthShrink->mouseDown(mouseX, mouseY);
 		slider_lengthShrink->mouseDown(mouseX, mouseY);
 
-		sprout_num_slider->mouseDown(mouseX, mouseY);
-		sprout_dir_slider->mouseDown(mouseX, mouseY);
-		segment_len_slider->mouseDown(mouseX, mouseY);
 		slider_randomOn->mouseDown(mouseX, mouseY);
 		
 		left_mouse = false;
@@ -258,10 +248,6 @@ void onMotion(int x, int y)
 		slider_widthShrink->mouseDrag(mouseX, mouseY);
 		slider_lengthShrink->mouseDrag(mouseX, mouseY);
 
-
-		sprout_num_slider->mouseDrag(mouseX, mouseY);
-		sprout_dir_slider->mouseDrag(mouseX, mouseY);
-		segment_len_slider->mouseDrag(mouseX, mouseY);
 		slider_randomOn->mouseDrag(mouseX, mouseY);
 	}
 }
@@ -1071,7 +1057,6 @@ void drawSlider(Slider *slider)
 
 void draw2Dthings()
 {
-	
 	glDisable(GL_LIGHTING);
 	
 		glPushMatrix();

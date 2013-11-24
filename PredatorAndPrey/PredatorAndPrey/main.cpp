@@ -119,7 +119,8 @@ void setGlobalsFromSliders()
 	startDepth = slider_startDepth->getValue();
 	branches = slider_branches->getValue();
 	
-	randomOn = 2 - slider_randomOn->getValue();
+	randomOn = slider_randomOn->getValue() == 1 ? 0 : 1;
+	cout<<randomOn;
 }
 
 
@@ -134,6 +135,7 @@ void initGlobals()
 	lengthShrink = 0.9;
 	startDepth = 3;
 	branches = 5;
+	randomOn=0;
 }
 
 
@@ -223,7 +225,7 @@ void mouse(int button, int state, int x, int y)
 		slider_lengthShrink->mouseUp(mouseX, mouseY);
 
 
-		slider_randomOn->mouseDown(mouseX, mouseY);
+		slider_randomOn->mouseUp(mouseX, mouseY);
 		
 		left_mouse = false;
 	}
@@ -964,6 +966,7 @@ void setButtonActions()
 	slider_treeB->setAction(buildMyTree);
 	slider_treeG->setAction(buildMyTree);
 	slider_treeR->setAction(buildMyTree);
+	slider_randomOn->setAction(buildMyTree);
 
 }
 

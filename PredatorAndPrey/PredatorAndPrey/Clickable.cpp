@@ -32,5 +32,13 @@ float Clickable::getY() {return this->y;}
 
 float Clickable::getWidth() {return this->width;}
 float Clickable::getHeight() {return this->height;}
+void Clickable::setAction(void (*action)())
+{
+	this->action = action;
+}
 
+void Clickable::executeAction()
+{
+	this->action();
+}
 std::string Clickable::getLabel() {return this->label;}

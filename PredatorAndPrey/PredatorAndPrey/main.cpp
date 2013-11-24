@@ -63,18 +63,18 @@ Setting_list *settings;
 
 
 
+int testvar = 0;
+Slider *slider1 = new Slider(2, 100, 100, 30,"Light R", 0, 10, &testvar);
+Slider *slider2 = new Slider(2, 150, 100, 30,"Light G", 0, 10, &testvar);
+Slider *slider3 = new Slider(2, 200, 100, 30,"Light B", 0, 10, &testvar);
 
-Slider *slider1 = new Slider(2, 100, 100, 30,"Light R", 0, 10);
-Slider *slider2 = new Slider(2, 150, 100, 30,"Light G", 0, 10);
-Slider *slider3 = new Slider(2, 200, 100, 30,"Light B1", 0, 10);
-
-Slider *sprout_num_slider = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10);
+Slider *sprout_num_slider = new Slider(2, 250, 100, 30,"Sprout Num", 0, 10, &testvar);
 PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
-Slider *sprout_dir_slider = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10);
+Slider *sprout_dir_slider = new Slider(2, 300, 100, 30,"Sprout Dir", 0, 10, &testvar);
 PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
 
-Slider *segment_len_slider = new Slider(2, 350, 100, 30,"Segment Len", 0, 10);
+Slider *segment_len_slider = new Slider(2, 350, 100, 30,"Segment Len", 0, 10, &testvar);
 PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
 
@@ -974,7 +974,7 @@ void drawSlider(Slider *slider)
 
 void draw2Dthings()
 {
-	
+	printf("%d" , testvar);
 	glDisable(GL_LIGHTING);
 	
 		glPushMatrix();
@@ -1151,7 +1151,6 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-
 
 	settings = new Setting_list;
 	loadSettings(settings);

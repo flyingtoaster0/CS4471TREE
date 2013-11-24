@@ -20,7 +20,7 @@ Slider::Slider(float x, float y, float width, float height, std::string label) :
 	this->clicked = false;
 }
 
-Slider::Slider(float x, float y, float width, float height,std::string label, int min, int max ) : Clickable(x, y, width, height, label)
+Slider::Slider(float x, float y, float width, float height,std::string label, int min, int max, int *test ) : Clickable(x, y, width, height, label)
 {
 	// Hardcoded color. Change this later maybe
 
@@ -30,6 +30,7 @@ Slider::Slider(float x, float y, float width, float height,std::string label, in
 	this->min = min;
 	this->max = max;
 	this->clicked = false;
+	this->test = test;
 
 }
 
@@ -81,6 +82,7 @@ vec3 Slider::getColor()
 void Slider::setValue(int value)
 {
 	this->value = value;
+	*this->test = value;
 }
 
 int Slider::getValue()

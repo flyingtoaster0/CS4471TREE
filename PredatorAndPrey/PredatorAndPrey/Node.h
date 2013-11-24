@@ -21,7 +21,7 @@ public:
 	
 	void addChild(Node *node);
 	void addChild(float height, float width);
-	void addChild(vec3 position, vec3 direction, float width);
+	Node* addChild(vec3 position, vec3 direction, float width);
 	
 	Node* getChildren();
 	Node* getSiblings();

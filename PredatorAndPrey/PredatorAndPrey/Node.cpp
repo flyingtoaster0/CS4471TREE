@@ -8,6 +8,7 @@ Node::Node()
 	this->height = 0;
 	this->numChildren = 0;
 	this->children = NULL;
+	this->sibling = NULL;
 }
 Node::Node(float height, float width)
 {
@@ -16,6 +17,7 @@ Node::Node(float height, float width)
 	this->height = height;
 	this->numChildren = 0;
 	this->children = NULL;
+	this->sibling = NULL;
 }
 
 Node::Node(vec3 position, vec3 direction, float width)
@@ -24,6 +26,7 @@ Node::Node(vec3 position, vec3 direction, float width)
 	this->position = position;
 	this->direction = direction;
 	this->children = NULL;
+	this->sibling = NULL;
 	this->numChildren = 0;
 
 }
@@ -36,41 +39,28 @@ void Node::addChild(Node *node)
 	}
 }
 
-void Node::addChild(float width, float height)
-{
-	if(this->children == NULL)
-	{
-		this->children = new Node(width, height);
-		this->children->sibling = NULL;
-	}
-	else
-	{
-		Node *placeholder = this->children;
-		for(int i=0; i<this->getNumChildren()-1; i++)
-			placeholder = placeholder->sibling;
-		placeholder->sibling = new Node(width, height);
-	}
-
-	this->numChildren++;
-}
 
 
-void Node::addChild(vec3 position, vec3 direction, float width)
+Node* Node::addChild(vec3 position, vec3 direction, float width)
 {
 	if(this->children == NULL)
 	{
 		this->children = new Node(position, direction, width);
 		this->children->sibling = NULL;
+		return this->children;
 	}
 	else
 	{
 		Node *placeholder = this->children;
-		for(int i=0; i<this->getNumChildren()-1; i++)
+		while(placeholder->sibling)
+		{
 			placeholder = placeholder->sibling;
+		}
+
 		placeholder->sibling = new Node(position, direction, width);
+		return placeholder->sibling;
 	}
 
-	this->numChildren++;
 }
 
 
@@ -86,10 +76,31 @@ float Node::getWidth()
 {
 	return this->width;
 }
+
+
+int Node::getNumChildren()
+{
+	if(this->getChildren() == NULL)
+		return 0;
+	else
+	{
+		Node *current = this->getChildren();
+		int n=1;
+		while(current->sibling)
+		{
+			current = current->sibling;
+			n++;
+		}
+
+		return n;
+	}
+}
+
+/*
 int Node::getNumChildren()
 {
 	return this->numChildren;
-}
+}*/
 Node* Node::getChildren()
 {
 	return this->children;

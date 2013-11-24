@@ -12,6 +12,7 @@
 #include <string>
 #include "Node.h"
 #include "vec.h"
+#include "mat.h"
 #include "PushButton.h"
 #include "Slider.h"
 
@@ -148,65 +149,46 @@ void onMotion(int x, int y)
 }
 
 
-
-Node *treeRecurse(Node *currentNode, int depth, float width, float height)
+float incidenceAngle(vec3 v1, vec3 v2)
 {
-	int branches=3;
-	float shrink=0.7;
-	Node *current = currentNode;
-	for(int i=0; i<depth; i++)
-	{
-		current->addChild(width, height);
-		for(int j=0; j<branches; j++)
-		{
-			treeRecurse(current->getChildren(), depth-1, width*shrink, height*shrink);
-		}
+	return acos(dot(v1, v2)/(length(v1)*length(v2))) * (180)/PI;
 
-	}
-	return currentNode;
 }
 
 
-/*
-Params:
-shrink (branch length/width)
-branch spread
-#branches
-
-
-
-*/
-
-
-Node *treeRecurse(Node *currentNode, vec3 position, vec3 direction, float width, int depth)
+Node *treeRecurse(Node *currentNode, float width, int depth)
 {
 	int branches=4;
-	float shrink=0.7;
-	float spread = 4;
+	float lengthShrink=0.8;
+	float widthShrink=0.7;
+	float spread = 2;
 	Node *current = currentNode;
-	for(int i=0; i<depth; i++)
+	//for(int i=0; i<depth; i++)
+	vec3 newPosition;
+
+	
+	if(depth>0)
 	{
-		current->addChild(position, direction*shrink, width*shrink);
+		
 		for(int j=0; j<branches; j++)
 		{
-			//(j* 2 * PI)*(j/branches)
-			float newX = sin(j * 2 * PI / branches);
-			float newY = cos(j * 2 * PI / branches);
-			//float newX = 0;
-			//float newY = 0;
-			vec3 newPosition = position+direction;
-			//newPosition = normalize(newPosition) * shrink;
-
-			vec3 newDirection = direction + vec3(newX, newY, 0);
-
-
-			float angle = acos(dot(direction, newDirection)/(length(direction)*length(newDirection)));
+			float newX = cos((2 * PI) * (((float)j) / (float)branches));
+			float newY = sin((2 * PI) * (((float)j) / (float)branches));
+			float newZ = sin(j * PI / branches);
 			
-			//glPushMatrix();
-			//glTranslatef(newPosition.x, newPosition.y, newPosition.z);
-			//glutSolidCone(width, length(newDirection), 15, 15);
-			//glPopMatrix();
-			treeRecurse(current->getChildren(), newPosition, newDirection*shrink, width*shrink, depth-1);
+			vec3 change;
+			vec3 newDirection;
+			
+			vec3 nextPosition = vec3(currentNode->getPosition().x+currentNode->getDirection().x, currentNode->getPosition().y+currentNode->getDirection().y, currentNode->getPosition().z + currentNode->getDirection().z);
+			
+			vec3 nextDirection = currentNode->getDirection() ;
+			
+			change = normalize(vec3(newX, newY, 0));
+			newDirection = nextDirection+normalize(change);
+			newDirection = normalize(newDirection) * currentNode->getHeight() * lengthShrink;
+
+			Node *nextBranch = currentNode->addChild(newPosition, newDirection, width*widthShrink);
+			treeRecurse(nextBranch, width*widthShrink, depth-1);
 		}
 
 	}
@@ -218,9 +200,8 @@ void drawUpsideDownCone(float base, float height, float slices, float stack)
 {
 
 	glPushMatrix();
-
-	glTranslatef(0,0,height);
-	glRotatef(180,1,1,0);
+	//glTranslatef(0,0,height);
+	//glRotatef(180,1,1,1);
 	glutSolidCone(base, height, slices, stack);
 
 	glPopMatrix();
@@ -230,28 +211,31 @@ void treeDraw(Node *currentNode)
 {
 	if(currentNode != NULL)
 	{
-		
+		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
+
+		float angle;
+		vec3 orthogVec;
+
+			
+		glTranslatef(0, 0, currentNode->getHeight());
+			
 
 		Node *children = currentNode->getChildren();
 		Node *currentChild = children;
-		for(int i=0; i<currentNode->getNumChildren()-1; i++)
+
+		while(currentChild)
 		{
-
+				
 			glPushMatrix();
-			vec3 direction = currentNode->getDirection();
-			//gluLookAt(currentNode->getX(), currentNode->getY(), currentNode->getZ(), currentNode->getX()-1, currentNode->getY()-1, currentNode->getZ()-1, direction.x, direction.y, direction.z);
-			
-			float angle = acos(dot(currentNode->getDirection(), currentChild->getDirection())/(length(currentNode->getDirection())*length(currentChild->getDirection()))) * (180)/PI;
-			
-			vec3 orthogVec = cross(currentNode->getDirection(), currentChild->getDirection());
-			glTranslatef(currentChild->getX(), currentChild->getY(), currentChild->getZ());
+			angle = incidenceAngle(currentChild->getDirection(), vec3(0, 0, 1));
+			orthogVec = cross(currentChild->getDirection(), vec3(0, 0, 1));
 			glRotatef(angle, orthogVec.x, orthogVec.y, orthogVec.z);
-			drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
-			glPopMatrix();
-
 
 			treeDraw(currentChild);
+				
+			glPopMatrix();
 			currentChild = currentChild->getSiblings();
+
 		}
 	}
 }
@@ -260,9 +244,9 @@ Node *myTree;
 
 void buildMyTree()
 {
-	float startWidth=1;
-	float startHeight=1;
-	int branches=3;
+	float startWidth=0.5;
+	float startHeight=3;
+	int branches=2;
 	int depth=3;
 	int shrink=0.5;
 
@@ -271,16 +255,10 @@ void buildMyTree()
 	Node *head = new Node(vec3(0,0,0), vec3(0,0,3), startWidth);
 	Node *current = head;
 
-	//glRotatef(100*spinAngle + 270, 1.0, 0.0, 0.0);
-
-	myTree = treeRecurse(current, vec3(0,0,0), vec3(0,0,3), startWidth, depth);
+	myTree = treeRecurse(current, startWidth, depth);
 	
-	
-	//head->addChild(1, 1);
-	//head->addChild(2, 2);
-	//head->addChild(3, 3);
-	int x = 6;
 }
+
 
 
 void drawTriangle(float *v1, float *v2, float *v3) 
@@ -385,6 +363,9 @@ void drawSphere(float x, float y, float z, float r)
 
 	glPopMatrix();
 }
+
+
+
 
 
 void setLighting()
@@ -829,18 +810,6 @@ void renderStringToWindow(string s)
 		char c = *i;
 		glutBitmapCharacter(font, c);
 	}
-}
-
-
-void drawTree()
-{
-	
-	glColor3f(0.3, 0.3, 0.3);
-	
-	//glPushMatrix();
-	glTranslatef(0,0,0);
-	
-	//glPopMatrix();
 }
 
 void drawButton(PushButton *button)

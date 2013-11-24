@@ -587,16 +587,16 @@ float zoom_z = 0;
 void setCamera()
 {
 	if(key['j']){
-		cam_x += ROT_AMOUNT;
-	}
-	if(key['u']){
 		cam_x -= ROT_AMOUNT;
 	}
+	if(key['u']){
+		cam_x += ROT_AMOUNT;
+	}
 	if(key['h']){
-		cam_y -= ROT_AMOUNT;
+		cam_y += ROT_AMOUNT;
 	}
 	if(key['k']){
-		cam_y += ROT_AMOUNT;
+		cam_y -= ROT_AMOUNT;
 	}
 	if(key['y']){
 		cam_z -= ROT_AMOUNT;
@@ -1103,8 +1103,8 @@ void draw2Dthings()
 			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
 			glVertex2f(0.0, 0.0);
 			glVertex2f(105.0, 0.0);
-			glVertex2f(105, 500);
-			glVertex2f(0.0, 500);
+			glVertex2f(105, WINDOW_HEIGHT);
+			glVertex2f(0.0, WINDOW_HEIGHT);
 		glEnd();
 	glPopMatrix();
 	
@@ -1176,51 +1176,6 @@ void drawScene() {
 	//glNormal3f(0.0f, 0.0f, 1.0f);
 
 
-
-	//Draws the budget. Need to clean this up a bit
-	
-	/*
-	glPushMatrix();
-	
-	
-	stringstream  convert;
-	convert << "Current Budget: " << std::setprecision(3) <<*budget <<'\0';
-	string s = convert.str();
-
-	void * font = GLUT_BITMAP_HELVETICA_10;
-	for (string::iterator i = s.begin(); i != s.end(); ++i)
-	{
-		char c = *i;
-		glutBitmapCharacter(font, c);
-	}
-
-
-	glScalef(_scale, _scale, _scale);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glPushMatrix();
-	glTranslatef(-17, 12.0, 0.0f / _scale);
-	t3dDraw3D(s, -1, 0, 0.2f, 1.5f);
-	glPopMatrix();
-
-	*/
-    /*
-	convert.str("");
-	convert << "Player 1: " << player1->getScore();
-	s = convert.str();
-	glPushMatrix();
-	glTranslatef(-2, 12.0, 0.0f / _scale);
-	t3dDraw3D(s, -1, 0, 0.2f, 1.5f);
-	glPopMatrix();
-
-	convert.str("");
-	convert << "Player 2: " << player2->getScore();
-	s = convert.str();
-	glPushMatrix();
-	glTranslatef(8, 12.0, 0.0f / _scale);
-	t3dDraw3D(s, -1, 0, 0.2f, 1.5f);
-	glPopMatrix();
-	*/
-	
 	glPopMatrix();
 
 

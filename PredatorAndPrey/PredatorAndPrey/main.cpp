@@ -547,7 +547,7 @@ void treeDraw(Node *currentNode)
 		{
 			vec3 leafColor = currentNode->getLeafColor();
 			glColor3f(leafColor.x, leafColor.y, leafColor.z);
-			drawSphere(0, 0, 0, leafSize, 1);
+			drawSphere(0, 0, 0, currentNode->getLeafSize(), 1);
 		}
 	}
 }
@@ -561,6 +561,7 @@ void buildMyTree()
 	Node *current = head;
 	current->setColor(treeColor);
 	current->setLeafColor(leafColor);
+	current->setLeafSize(leafSize);
 	tree[treeNum] = treeRecurse(current, startWidth, startDepth);
 	//myTree = treeRecurse(current, startWidth, startDepth);
 	
@@ -1414,7 +1415,7 @@ int main(int argc, char** argv) {
 	
 	//buildMyTree();
 
-	glutCreateWindow("NATURE SIMULATOR 2014 - PROFESSIONAL EDITION PLATINUM");
+	glutCreateWindow("NATURE SIMULATOR 2014 - PROFESSIONAL EDITION");
 	initRendering();
 
 	//Set handler functions

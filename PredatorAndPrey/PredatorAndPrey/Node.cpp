@@ -50,6 +50,7 @@ Node* Node::addChild(vec3 position, vec3 direction, float width)
 		
 		this->children->setColor(this->getColor());
 		this->children->setLeafColor(this->getLeafColor());
+		this->children->setLeafSize(this->getLeafSize());
 
 		return this->children;
 	}
@@ -64,6 +65,7 @@ Node* Node::addChild(vec3 position, vec3 direction, float width)
 		placeholder->sibling = new Node(position, direction, width);
 		placeholder->sibling->setColor(this->getColor());
 		placeholder->sibling->setLeafColor(this->getLeafColor());
+		placeholder->sibling->setLeafSize(this->getLeafSize());
 		return placeholder->sibling;
 	}
 
@@ -146,6 +148,15 @@ void Node::setColor(vec3 color)
 void Node::setLeafColor(vec3 leafColor)
 {
 	this->leafColor = leafColor;
+}
+
+void Node::setLeafSize(float leafSize)
+{
+	this->leafSize = leafSize;
+}
+float Node::getLeafSize()
+{
+	return this->leafSize;
 }
 
 vec3 Node::getColor()

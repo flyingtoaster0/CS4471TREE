@@ -14,6 +14,7 @@ class Node
 	vec3 direction;
 	vec3 color;
 	vec3 leafColor;
+	float leafSize;
 
 public:
 	Node();
@@ -43,5 +44,7 @@ public:
 	
 	vec3 getColor();
 	vec3 getLeafColor();
+	float getLeafSize();
+	void setLeafSize(float leafSize);
 
 };

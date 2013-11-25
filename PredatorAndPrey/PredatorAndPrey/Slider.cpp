@@ -50,7 +50,7 @@ void Slider::mouseUp(float x, float y)
 	if (this->clicked && this->action && overlap(x,y))
 	{
 		this->clicked = false;
-		this->action();
+		this->executeAction();
 		printf("%s", this->getLabel());
 	}
 	

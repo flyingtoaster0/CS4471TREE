@@ -99,13 +99,15 @@ Slider *slider_lengthShrink = new Slider(2, 500, 100, SLIDER_HEIGHT,"H Shrink", 
 
 Slider *slider_randomOn = new Slider(2, 550, 100, SLIDER_HEIGHT,"Randomness", 0, 2);
 
+Slider *slider_lightingR = new Slider(WINDOW_WIDTH - 105, 20, 100, SLIDER_HEIGHT, "Lighting R", 0, 10);
+Slider *slider_lightingG = new Slider(WINDOW_WIDTH - 105, 70, 100, SLIDER_HEIGHT, "Lighting G", 0, 10);
+Slider *slider_lightingB = new Slider(WINDOW_WIDTH - 105, 120, 100, SLIDER_HEIGHT, "Lighting B", 0, 10);
+Slider *slider_lightingIntensity = new Slider(WINDOW_WIDTH - 105, 170, 100, SLIDER_HEIGHT, "Intensity", 0, 10);
 
 PushButton *button_update = new PushButton(110, 550, 50, SLIDER_HEIGHT, "Update");
 PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
-PushButton *button5 = new PushButton(110, 300, 50, 30, "Random Dir");
 
-PushButton *button6 = new PushButton(110, 350, 50, 30, "Random Len");
 
 
 
@@ -196,8 +198,6 @@ void mouse(int button, int state, int x, int y)
 	if(state == 0) //Down
 	{
 		button_update->mouseDown(mouseX, mouseY);
-		button5->mouseDown(mouseX, mouseY);
-		button6->mouseDown(mouseX, mouseY);
 		slider_treeR->mouseDown(mouseX, mouseY);
 		slider_treeG->mouseDown(mouseX, mouseY);
 		slider_treeB->mouseDown(mouseX, mouseY);
@@ -213,6 +213,11 @@ void mouse(int button, int state, int x, int y)
 		slider_widthShrink->mouseDown(mouseX, mouseY);
 		slider_lengthShrink->mouseDown(mouseX, mouseY);
 
+		slider_lightingB->mouseDown(mouseX, mouseY);
+		slider_lightingR->mouseDown(mouseX, mouseY);
+		slider_lightingG->mouseDown(mouseX, mouseY);
+		slider_lightingIntensity->mouseDown(mouseX, mouseY);
+
 		slider_randomOn->mouseDown(mouseX, mouseY);
 
 		slider_treeNum->mouseDown(mouseX, mouseY);
@@ -222,8 +227,6 @@ void mouse(int button, int state, int x, int y)
 	else if(state == 1) //Up
 	{
 		button_update->mouseUp(mouseX, mouseY);
-		button5->mouseUp(mouseX, mouseY);
-		button6->mouseUp(mouseX, mouseY);
 		slider_treeR->mouseUp(mouseX, mouseY);
 		slider_treeG->mouseUp(mouseX, mouseY);
 		slider_treeB->mouseUp(mouseX, mouseY);
@@ -237,6 +240,10 @@ void mouse(int button, int state, int x, int y)
 		slider_widthShrink->mouseUp(mouseX, mouseY);
 		slider_lengthShrink->mouseUp(mouseX, mouseY);
 
+		slider_lightingB->mouseUp(mouseX, mouseY);
+		slider_lightingR->mouseUp(mouseX, mouseY);
+		slider_lightingG->mouseUp(mouseX, mouseY);
+		slider_lightingIntensity->mouseUp(mouseX, mouseY);
 
 		slider_randomOn->mouseUp(mouseX, mouseY);
 		
@@ -274,6 +281,10 @@ void onMotion(int x, int y)
 		slider_randomOn->mouseDrag(mouseX, mouseY);
 		slider_treeNum->mouseDrag(mouseX, mouseY);
 
+		slider_lightingB->mouseDrag(mouseX, mouseY);
+		slider_lightingR->mouseDrag(mouseX, mouseY);
+		slider_lightingG->mouseDrag(mouseX, mouseY);
+		slider_lightingIntensity->mouseDrag(mouseX, mouseY);
 
 	}
 }
@@ -528,7 +539,10 @@ void setLighting()
 	if(key['t']){
 		lightPos0[2] += 0.1;
 	}
-	
+	lightColor0[0] = (slider_lightingR->getValue()/ 10.0)* (slider_lightingIntensity->getValue() / 10.0);
+	lightColor0[1] = (slider_lightingG->getValue() / 10.0)* (slider_lightingIntensity->getValue() / 10.0);
+	lightColor0[2] = (slider_lightingB->getValue() / 10.0) * (slider_lightingIntensity->getValue() / 10.0);
+
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
 
@@ -967,8 +981,6 @@ void drawTree()
 void setButtonActions()
 {
 	button_update->setAction(buildMyTree);
-	button5->setAction(buildMyTree);
-	button6->setAction(buildMyTree);
 	slider_branches->setAction(buildMyTree);
 	slider_startDepth->setAction(buildMyTree);
 	slider_widthShrink->setAction(buildMyTree);
@@ -979,6 +991,11 @@ void setButtonActions()
 	slider_treeG->setAction(buildMyTree);
 	slider_treeR->setAction(buildMyTree);
 	slider_randomOn->setAction(buildMyTree);
+
+	slider_lightingR->setAction(setLighting);
+	slider_lightingG->setAction(setLighting);
+	slider_lightingB->setAction(setLighting);
+	slider_lightingIntensity->setAction(setLighting);
 
 }
 
@@ -1099,6 +1116,7 @@ void draw2Dthings()
 	
 		glPushMatrix();
 		glTranslatef(0, 0, -5.1f);
+
 		glBegin(GL_QUADS);
 			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
 			glVertex2f(0.0, 0.0);
@@ -1106,11 +1124,23 @@ void draw2Dthings()
 			glVertex2f(105, WINDOW_HEIGHT);
 			glVertex2f(0.0, WINDOW_HEIGHT);
 		glEnd();
+
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(WINDOW_WIDTH - 105, 0, -5.1f);
+
+		glBegin(GL_QUADS);
+			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
+			glVertex2f(0.0, 0.0);
+			glVertex2f(105.0, 0.0);
+			glVertex2f(105, WINDOW_HEIGHT / 3);
+			glVertex2f(0.0, WINDOW_HEIGHT / 3);
+		glEnd();
+
 	glPopMatrix();
 	
 	drawButton(button_update);
-	drawButton(button5);
-	drawButton(button6);
 	drawSlider(slider_treeR);
 	drawSlider(slider_treeG);
 	drawSlider(slider_treeB);
@@ -1124,6 +1154,10 @@ void draw2Dthings()
 	drawSlider(slider_randomOn);
 	drawSlider(slider_treeNum);
 
+	drawSlider(slider_lightingB);
+	drawSlider(slider_lightingR);
+	drawSlider(slider_lightingG);
+	drawSlider(slider_lightingIntensity);
 
 
 	glEnable(GL_LIGHTING);

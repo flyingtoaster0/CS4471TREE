@@ -7,6 +7,7 @@ Clickable::Clickable()
 	this->y = 0;
 	this->width = 0;
 	this->height = 0;
+	this->action = NULL;
 }
 
 Clickable::Clickable(float x, float y, float width, float height, std::string label)
@@ -16,6 +17,7 @@ Clickable::Clickable(float x, float y, float width, float height, std::string la
 	this->width = width;
 	this->height = height;
 	this->label = label;
+	this->action = NULL;
 }
 
 bool Clickable::overlap(float x, float y)

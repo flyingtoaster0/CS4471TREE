@@ -58,7 +58,7 @@ float cam_x = 0.0;
 float cam_y = 0.0;
 float cam_z = 0.0;
 float up_x = 0.0;
-float up_y = 1.0;
+float up_y = 0.0;
 float up_z = 0.0;
 
 float pitch = 0.0;
@@ -88,12 +88,14 @@ vec3 treeColor;
 vec3 leafColor;
 
 float treeR, treeG, treeB;
+float leafR, leafG, leafB;
 float widthShrink, lengthShrink;
 int startDepth, branches;
 float startWidth, startHeight;
+float leafSize;
 int randomOn;
-
 int treeNum;
+bool showUi;
 
 
 
@@ -115,12 +117,18 @@ Slider *slider_lengthShrink = new Slider(2, 500, 100, SLIDER_HEIGHT,"H Shrink", 
 
 Slider *slider_randomOn = new Slider(2, 550, 100, SLIDER_HEIGHT,"Randomness", 0, 2);
 
-Slider *slider_lightingR = new Slider(WINDOW_WIDTH - 105, 20, 100, SLIDER_HEIGHT, "Lighting R", 0, 10);
-Slider *slider_lightingG = new Slider(WINDOW_WIDTH - 105, 70, 100, SLIDER_HEIGHT, "Lighting G", 0, 10);
-Slider *slider_lightingB = new Slider(WINDOW_WIDTH - 105, 120, 100, SLIDER_HEIGHT, "Lighting B", 0, 10);
-Slider *slider_lightingIntensity = new Slider(WINDOW_WIDTH - 105, 170, 100, SLIDER_HEIGHT, "Intensity", 0, 10);
+Slider *slider_leafR = new Slider(WINDOW_WIDTH - 105, 20, 100, SLIDER_HEIGHT, "Leaf R", 0, 10);
+Slider *slider_leafG = new Slider(WINDOW_WIDTH - 105, 70, 100, SLIDER_HEIGHT, "Leaf G", 0, 10);
+Slider *slider_leafB = new Slider(WINDOW_WIDTH - 105, 120, 100, SLIDER_HEIGHT, "Leaf B", 0, 10);
+Slider *slider_leafSize = new Slider(WINDOW_WIDTH - 105, 170, 100, SLIDER_HEIGHT, "Leaf Size", 0, 10);
+
+Slider *slider_lightingR = new Slider(WINDOW_WIDTH - 105, 220, 100, SLIDER_HEIGHT, "Lighting R", 0, 10);
+Slider *slider_lightingG = new Slider(WINDOW_WIDTH - 105, 270, 100, SLIDER_HEIGHT, "Lighting G", 0, 10);
+Slider *slider_lightingB = new Slider(WINDOW_WIDTH - 105, 320, 100, SLIDER_HEIGHT, "Lighting B", 0, 10);
+Slider *slider_lightingIntensity = new Slider(WINDOW_WIDTH - 105, 370, 100, SLIDER_HEIGHT, "Intensity", 0, 10);
 
 PushButton *button_update = new PushButton(110, 550, 50, SLIDER_HEIGHT, "Update");
+PushButton *button_ui = new PushButton(110, 550, 50, SLIDER_HEIGHT, "UI");
 PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
 
@@ -133,8 +141,14 @@ void setGlobalsFromSliders()
 	treeG = (float)(slider_treeG->getValue())/10;
 	treeB = (float)(slider_treeB->getValue())/10;
 	
+	leafR = (float)(slider_leafR->getValue())/10;
+	leafG = (float)(slider_leafG->getValue())/10;
+	leafB = (float)(slider_leafB->getValue())/10;
+	
 	treeColor = vec3(treeR, treeG, treeB);
-	leafColor = vec3(treeR, treeG, treeB);
+	leafColor = vec3(leafR, leafG, leafB);
+
+	leafSize = (((float)(slider_leafSize->getValue()) - 1) * 3 / 10);
 
 	startWidth = (float)(slider_startWidth->getValue())/10;
 	startHeight = slider_startHeight->getValue();
@@ -160,6 +174,7 @@ void initGlobals()
 	treeG = 1;
 	treeB = 1;
 	treeColor = vec3(treeR, treeG, treeB);
+	leafColor = vec3(leafR, leafG, leafB);
 	startWidth = 0.3;
 	startHeight = 3;
 	widthShrink = 0.9;
@@ -168,10 +183,8 @@ void initGlobals()
 	branches = 5;
 	randomOn=0;
 	treeNum=0;
-	
-	lookAtVec = vec3(0.0, 0.0, -1.0);
-	upVec = vec3(0.0, 1.0, 0.0);
-	rightVec = vec3(1.0, 0.0, 0.0);
+	leafSize=0;
+	UI=true;
 }
 
 
@@ -218,6 +231,7 @@ void mouse(int button, int state, int x, int y)
 	if(state == 0) //Down
 	{
 		button_update->mouseDown(mouseX, mouseY);
+		button_ui->mouseDown(mouseX, mouseY);
 		slider_treeR->mouseDown(mouseX, mouseY);
 		slider_treeG->mouseDown(mouseX, mouseY);
 		slider_treeB->mouseDown(mouseX, mouseY);
@@ -232,6 +246,11 @@ void mouse(int button, int state, int x, int y)
 
 		slider_widthShrink->mouseDown(mouseX, mouseY);
 		slider_lengthShrink->mouseDown(mouseX, mouseY);
+		
+		slider_leafR->mouseDown(mouseX, mouseY);
+		slider_leafG->mouseDown(mouseX, mouseY);
+		slider_leafB->mouseDown(mouseX, mouseY);
+		slider_leafSize->mouseDown(mouseX, mouseY);
 
 		slider_lightingB->mouseDown(mouseX, mouseY);
 		slider_lightingR->mouseDown(mouseX, mouseY);
@@ -247,6 +266,7 @@ void mouse(int button, int state, int x, int y)
 	else if(state == 1) //Up
 	{
 		button_update->mouseUp(mouseX, mouseY);
+		button_ui->mouseUp(mouseX, mouseY);
 		slider_treeR->mouseUp(mouseX, mouseY);
 		slider_treeG->mouseUp(mouseX, mouseY);
 		slider_treeB->mouseUp(mouseX, mouseY);
@@ -259,6 +279,11 @@ void mouse(int button, int state, int x, int y)
 
 		slider_widthShrink->mouseUp(mouseX, mouseY);
 		slider_lengthShrink->mouseUp(mouseX, mouseY);
+		
+		slider_leafR->mouseUp(mouseX, mouseY);
+		slider_leafG->mouseUp(mouseX, mouseY);
+		slider_leafB->mouseUp(mouseX, mouseY);
+		slider_leafSize->mouseUp(mouseX, mouseY);
 
 		slider_lightingB->mouseUp(mouseX, mouseY);
 		slider_lightingR->mouseUp(mouseX, mouseY);
@@ -300,6 +325,11 @@ void onMotion(int x, int y)
 
 		slider_randomOn->mouseDrag(mouseX, mouseY);
 		slider_treeNum->mouseDrag(mouseX, mouseY);
+		
+		slider_leafR->mouseDrag(mouseX, mouseY);
+		slider_leafG->mouseDrag(mouseX, mouseY);
+		slider_leafB->mouseDrag(mouseX, mouseY);
+		slider_leafSize->mouseDrag(mouseX, mouseY);
 
 		slider_lightingB->mouseDrag(mouseX, mouseY);
 		slider_lightingR->mouseDrag(mouseX, mouseY);
@@ -517,7 +547,7 @@ void treeDraw(Node *currentNode)
 		{
 			vec3 leafColor = currentNode->getLeafColor();
 			glColor3f(leafColor.x, leafColor.y, leafColor.z);
-			drawSphere(0, 0, 0, 1, 1);
+			drawSphere(0, 0, 0, leafSize, 1);
 		}
 	}
 }
@@ -1022,10 +1052,16 @@ void drawTree()
 	//glPopMatrix();
 }
 
+void toggleUi()
+{
+	showUi;
+}
+
 
 void setButtonActions()
 {
 	button_update->setAction(buildMyTree);
+	button_ui->setAction(toggleUI);
 	slider_branches->setAction(buildMyTree);
 	slider_startDepth->setAction(buildMyTree);
 	slider_widthShrink->setAction(buildMyTree);
@@ -1036,6 +1072,11 @@ void setButtonActions()
 	slider_treeG->setAction(buildMyTree);
 	slider_treeR->setAction(buildMyTree);
 	slider_randomOn->setAction(buildMyTree);
+	
+	slider_leafR->setAction(buildMyTree);
+	slider_leafG->setAction(buildMyTree);
+	slider_leafB->setAction(buildMyTree);
+	slider_leafSize->setAction(buildMyTree);
 
 	slider_lightingR->setAction(setLighting);
 	slider_lightingG->setAction(setLighting);
@@ -1186,6 +1227,7 @@ void draw2Dthings()
 	glPopMatrix();
 	
 	drawButton(button_update);
+	drawButton(button_ui);
 	drawSlider(slider_treeR);
 	drawSlider(slider_treeG);
 	drawSlider(slider_treeB);
@@ -1198,10 +1240,15 @@ void draw2Dthings()
 	drawSlider(slider_lengthShrink);
 	drawSlider(slider_randomOn);
 	drawSlider(slider_treeNum);
+	
+	drawSlider(slider_leafB);
+	drawSlider(slider_leafR);
+	drawSlider(slider_leafG);
+	drawSlider(slider_leafSize);
 
-	drawSlider(slider_lightingB);
 	drawSlider(slider_lightingR);
 	drawSlider(slider_lightingG);
+	drawSlider(slider_lightingB);
 	drawSlider(slider_lightingIntensity);
 
 

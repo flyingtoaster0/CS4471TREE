@@ -128,7 +128,7 @@ Slider *slider_lightingB = new Slider(WINDOW_WIDTH - 105, 320, 100, SLIDER_HEIGH
 Slider *slider_lightingIntensity = new Slider(WINDOW_WIDTH - 105, 370, 100, SLIDER_HEIGHT, "Intensity", 0, 10);
 
 PushButton *button_update = new PushButton(110, 550, 50, SLIDER_HEIGHT, "Update");
-PushButton *button_ui = new PushButton(110, 550, 50, SLIDER_HEIGHT, "UI");
+PushButton *button_ui = new PushButton(110, 500, 50, SLIDER_HEIGHT, "UI");
 PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
 
@@ -184,7 +184,7 @@ void initGlobals()
 	randomOn=0;
 	treeNum=0;
 	leafSize=0;
-	UI=true;
+	showUi=true;
 }
 
 
@@ -597,7 +597,7 @@ void setLighting()
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
 
 
-	glColor3f(1.0, 1.0, 1.0);
+	glColor3f(lightColor0[0], lightColor0[1], lightColor0[2]);
 	drawSphere(lightPos0[0], lightPos0[1], lightPos0[2], 0.2, 3);
 
 }
@@ -1054,14 +1054,14 @@ void drawTree()
 
 void toggleUi()
 {
-	showUi;
+	showUi = !showUi;
 }
 
 
 void setButtonActions()
 {
 	button_update->setAction(buildMyTree);
-	button_ui->setAction(toggleUI);
+	button_ui->setAction(toggleUi);
 	slider_branches->setAction(buildMyTree);
 	slider_startDepth->setAction(buildMyTree);
 	slider_widthShrink->setAction(buildMyTree);
@@ -1202,7 +1202,9 @@ void draw2Dthings()
 	
 		glPushMatrix();
 		glTranslatef(0, 0, -5.1f);
-
+	drawButton(button_ui);
+	if(showUi)
+	{
 		glBegin(GL_QUADS);
 			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
 			glVertex2f(0.0, 0.0);
@@ -1211,46 +1213,48 @@ void draw2Dthings()
 			glVertex2f(0.0, WINDOW_HEIGHT);
 		glEnd();
 
-	glPopMatrix();
+		glPopMatrix();
 
-	glPushMatrix();
-		glTranslatef(WINDOW_WIDTH - 105, 0, -5.1f);
+		glPushMatrix();
+			glTranslatef(WINDOW_WIDTH - 105, 0, -5.1f);
 
-		glBegin(GL_QUADS);
-			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
-			glVertex2f(0.0, 0.0);
-			glVertex2f(105.0, 0.0);
-			glVertex2f(105, WINDOW_HEIGHT / 3);
-			glVertex2f(0.0, WINDOW_HEIGHT / 3);
-		glEnd();
+			glBegin(GL_QUADS);
+				glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
+				glVertex2f(0.0, 0.0);
+				glVertex2f(105.0, 0.0);
+				glVertex2f(105, WINDOW_HEIGHT * 3/4);
+				glVertex2f(0.0, WINDOW_HEIGHT * 3/4);
+			glEnd();
 
-	glPopMatrix();
+		glPopMatrix();
 	
-	drawButton(button_update);
-	drawButton(button_ui);
-	drawSlider(slider_treeR);
-	drawSlider(slider_treeG);
-	drawSlider(slider_treeB);
 
-	drawSlider(slider_startWidth);
-	drawSlider(slider_startHeight);
-	drawSlider(slider_startDepth);
-	drawSlider(slider_branches);
-	drawSlider(slider_widthShrink);
-	drawSlider(slider_lengthShrink);
-	drawSlider(slider_randomOn);
-	drawSlider(slider_treeNum);
 	
-	drawSlider(slider_leafB);
-	drawSlider(slider_leafR);
-	drawSlider(slider_leafG);
-	drawSlider(slider_leafSize);
+	
+		drawButton(button_update);
+		drawSlider(slider_treeR);
+		drawSlider(slider_treeG);
+		drawSlider(slider_treeB);
 
-	drawSlider(slider_lightingR);
-	drawSlider(slider_lightingG);
-	drawSlider(slider_lightingB);
-	drawSlider(slider_lightingIntensity);
+		drawSlider(slider_startWidth);
+		drawSlider(slider_startHeight);
+		drawSlider(slider_startDepth);
+		drawSlider(slider_branches);
+		drawSlider(slider_widthShrink);
+		drawSlider(slider_lengthShrink);
+		drawSlider(slider_randomOn);
+		drawSlider(slider_treeNum);
+	
+		drawSlider(slider_leafB);
+		drawSlider(slider_leafR);
+		drawSlider(slider_leafG);
+		drawSlider(slider_leafSize);
 
+		drawSlider(slider_lightingR);
+		drawSlider(slider_lightingG);
+		drawSlider(slider_lightingB);
+		drawSlider(slider_lightingIntensity);
+	}
 
 	glEnable(GL_LIGHTING);
 }
@@ -1345,17 +1349,21 @@ void drawScene() {
 	glPopMatrix();
 
 
-
-
+	
 	glNormal3f(0.0f, 0.0f, 1.0f);
 	GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 	draw2Dthings();
 
 	// Making sure we can render 3d again
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
+	
+
 	glMatrixMode(GL_MODELVIEW);
+	
+
+	
 
 	glutSwapBuffers();
 }

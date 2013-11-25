@@ -100,32 +100,32 @@ bool showUi;
 
 
 
-Slider *slider_treeNum = new Slider(2, 20, 100, SLIDER_HEIGHT,"Tree #", 0, TREES_AMOUNT);
+Slider *slider_treeNum = new Slider(2, 20, 100, SLIDER_HEIGHT,"Tree #", 0, TREES_AMOUNT, 0);
 
-Slider *slider_treeR = new Slider(2, 100, 100, SLIDER_HEIGHT,"Tree R", 0, 10);
-Slider *slider_treeG = new Slider(2, 150, 100, SLIDER_HEIGHT,"Tree G", 0, 10);
-Slider *slider_treeB = new Slider(2, 200, 100, SLIDER_HEIGHT,"Tree B1", 0, 10);
+Slider *slider_treeR = new Slider(2, 100, 100, SLIDER_HEIGHT,"Tree R", 0, 10, 4);
+Slider *slider_treeG = new Slider(2, 150, 100, SLIDER_HEIGHT,"Tree G", 0, 10, 2);
+Slider *slider_treeB = new Slider(2, 200, 100, SLIDER_HEIGHT,"Tree B1", 0, 10, 2);
 
-Slider *slider_startWidth = new Slider(2, 250, 100, SLIDER_HEIGHT,"Start W", 0, 10);
-Slider *slider_startHeight = new Slider(2, 300, 100, SLIDER_HEIGHT,"Start H", 0, 10);
+Slider *slider_startWidth = new Slider(2, 250, 100, SLIDER_HEIGHT,"Start W", 0, 10, 3);
+Slider *slider_startHeight = new Slider(2, 300, 100, SLIDER_HEIGHT,"Start H", 0, 10, 4);
 
-Slider *slider_startDepth = new Slider(2, 350, 100, SLIDER_HEIGHT,"Start Depth", 0, 10);
-Slider *slider_branches = new Slider(2, 400, 100, SLIDER_HEIGHT,"Branches", 0, 10);
+Slider *slider_startDepth = new Slider(2, 350, 100, SLIDER_HEIGHT,"Start Depth", 0, 10, 3);
+Slider *slider_branches = new Slider(2, 400, 100, SLIDER_HEIGHT,"Branches", 0, 10, 4);
 
-Slider *slider_widthShrink = new Slider(2, 450, 100, SLIDER_HEIGHT,"W Shrink", 0, 10);
-Slider *slider_lengthShrink = new Slider(2, 500, 100, SLIDER_HEIGHT,"H Shrink", 0, 10);
+Slider *slider_widthShrink = new Slider(2, 450, 100, SLIDER_HEIGHT,"W Shrink", 0, 10, 1);
+Slider *slider_lengthShrink = new Slider(2, 500, 100, SLIDER_HEIGHT,"H Shrink", 0, 10, 0);
 
-Slider *slider_randomOn = new Slider(2, 550, 100, SLIDER_HEIGHT,"Randomness", 0, 2);
+Slider *slider_randomOn = new Slider(2, 550, 100, SLIDER_HEIGHT,"Randomness", 0, 2, 0);
 
-Slider *slider_leafR = new Slider(WINDOW_WIDTH - 105, 20, 100, SLIDER_HEIGHT, "Leaf R", 0, 10);
-Slider *slider_leafG = new Slider(WINDOW_WIDTH - 105, 70, 100, SLIDER_HEIGHT, "Leaf G", 0, 10);
-Slider *slider_leafB = new Slider(WINDOW_WIDTH - 105, 120, 100, SLIDER_HEIGHT, "Leaf B", 0, 10);
-Slider *slider_leafSize = new Slider(WINDOW_WIDTH - 105, 170, 100, SLIDER_HEIGHT, "Leaf Size", 0, 10);
+Slider *slider_leafR = new Slider(WINDOW_WIDTH - 105, 20, 100, SLIDER_HEIGHT, "Leaf R", 0, 10, 5);
+Slider *slider_leafG = new Slider(WINDOW_WIDTH - 105, 70, 100, SLIDER_HEIGHT, "Leaf G", 0, 10, 7);
+Slider *slider_leafB = new Slider(WINDOW_WIDTH - 105, 120, 100, SLIDER_HEIGHT, "Leaf B", 0, 10, 2);
+Slider *slider_leafSize = new Slider(WINDOW_WIDTH - 105, 170, 100, SLIDER_HEIGHT, "Leaf Size", 0, 10, 3);
 
-Slider *slider_lightingR = new Slider(WINDOW_WIDTH - 105, 220, 100, SLIDER_HEIGHT, "Lighting R", 0, 10);
-Slider *slider_lightingG = new Slider(WINDOW_WIDTH - 105, 270, 100, SLIDER_HEIGHT, "Lighting G", 0, 10);
-Slider *slider_lightingB = new Slider(WINDOW_WIDTH - 105, 320, 100, SLIDER_HEIGHT, "Lighting B", 0, 10);
-Slider *slider_lightingIntensity = new Slider(WINDOW_WIDTH - 105, 370, 100, SLIDER_HEIGHT, "Intensity", 0, 10);
+Slider *slider_lightingR = new Slider(WINDOW_WIDTH - 105, 220, 100, SLIDER_HEIGHT, "Lighting R", 0, 10, 9);
+Slider *slider_lightingG = new Slider(WINDOW_WIDTH - 105, 270, 100, SLIDER_HEIGHT, "Lighting G", 0, 10, 9);
+Slider *slider_lightingB = new Slider(WINDOW_WIDTH - 105, 320, 100, SLIDER_HEIGHT, "Lighting B", 0, 10, 9);
+Slider *slider_lightingIntensity = new Slider(WINDOW_WIDTH - 105, 370, 100, SLIDER_HEIGHT, "Intensity", 0, 10, 9);
 
 PushButton *button_update = new PushButton(110, 550, 50, SLIDER_HEIGHT, "Update");
 PushButton *button_ui = new PushButton(110, 550, 50, SLIDER_HEIGHT, "UI");
@@ -184,7 +184,7 @@ void initGlobals()
 	randomOn=0;
 	treeNum=0;
 	leafSize=0;
-	UI=true;
+	//UI=true;
 }
 
 
@@ -1061,7 +1061,7 @@ void toggleUi()
 void setButtonActions()
 {
 	button_update->setAction(buildMyTree);
-	button_ui->setAction(toggleUI);
+//	button_ui->setAction(toggleUI);
 	slider_branches->setAction(buildMyTree);
 	slider_startDepth->setAction(buildMyTree);
 	slider_widthShrink->setAction(buildMyTree);
@@ -1220,8 +1220,8 @@ void draw2Dthings()
 			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
 			glVertex2f(0.0, 0.0);
 			glVertex2f(105.0, 0.0);
-			glVertex2f(105, WINDOW_HEIGHT / 3);
-			glVertex2f(0.0, WINDOW_HEIGHT / 3);
+			glVertex2f(105, WINDOW_HEIGHT / 1.5);
+			glVertex2f(0.0, WINDOW_HEIGHT / 1.5);
 		glEnd();
 
 	glPopMatrix();

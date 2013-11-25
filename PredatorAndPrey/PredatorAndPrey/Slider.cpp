@@ -20,7 +20,7 @@ Slider::Slider(float x, float y, float width, float height, std::string label) :
 	this->clicked = false;
 }
 
-Slider::Slider(float x, float y, float width, float height,std::string label, int min, int max) : Clickable(x, y, width, height, label)
+Slider::Slider(float x, float y, float width, float height,std::string label, int min, int max, int default_value) : Clickable(x, y, width, height, label)
 {
 	// Hardcoded color. Change this later maybe
 
@@ -30,6 +30,7 @@ Slider::Slider(float x, float y, float width, float height,std::string label, in
 	this->min = min;
 	this->max = max;
 	this->clicked = false;
+	this->setValue(default_value);
 
 }
 

@@ -54,15 +54,15 @@ float spinAngle = 0;
 float spinSpeed = 0;
 
 //camera starting settings
-float cam_x = 0.0;
-float cam_y = 0.0;
-float cam_z = 0.0;
+float cam_x = 50;
+float cam_y = 45.0;
+float cam_z = -40.0;
 float up_x = 0.0;
 float up_y = 0.0;
 float up_z = 0.0;
 
-float pitch = 0.0;
-float yaw = 0.0;
+float pitch = -50;
+float yaw = 50;
 float roll = 0.0;
 float zoom = 0.0;
 float strafe = 0.0;
@@ -103,7 +103,7 @@ bool showUi;
 Slider *slider_treeNum = new Slider(2, 20, 100, SLIDER_HEIGHT,"Tree #", 0, TREES_AMOUNT, 0);
 
 Slider *slider_treeR = new Slider(2, 100, 100, SLIDER_HEIGHT,"Tree R", 0, 10, 4);
-Slider *slider_treeG = new Slider(2, 150, 100, SLIDER_HEIGHT,"Tree G", 0, 10, 2);
+Slider *slider_treeG = new Slider(2, 150, 100, SLIDER_HEIGHT,"Tree G", 0, 10, 3);
 Slider *slider_treeB = new Slider(2, 200, 100, SLIDER_HEIGHT,"Tree B1", 0, 10, 2);
 
 Slider *slider_startWidth = new Slider(2, 250, 100, SLIDER_HEIGHT,"Start W", 0, 10, 3);
@@ -117,8 +117,8 @@ Slider *slider_lengthShrink = new Slider(2, 500, 100, SLIDER_HEIGHT,"H Shrink", 
 
 Slider *slider_randomOn = new Slider(2, 550, 100, SLIDER_HEIGHT,"Randomness", 0, 2, 0);
 
-Slider *slider_leafR = new Slider(WINDOW_WIDTH - 105, 20, 100, SLIDER_HEIGHT, "Leaf R", 0, 10, 5);
-Slider *slider_leafG = new Slider(WINDOW_WIDTH - 105, 70, 100, SLIDER_HEIGHT, "Leaf G", 0, 10, 7);
+Slider *slider_leafR = new Slider(WINDOW_WIDTH - 105, 20, 100, SLIDER_HEIGHT, "Leaf R", 0, 10, 3);
+Slider *slider_leafG = new Slider(WINDOW_WIDTH - 105, 70, 100, SLIDER_HEIGHT, "Leaf G", 0, 10, 6);
 Slider *slider_leafB = new Slider(WINDOW_WIDTH - 105, 120, 100, SLIDER_HEIGHT, "Leaf B", 0, 10, 2);
 Slider *slider_leafSize = new Slider(WINDOW_WIDTH - 105, 170, 100, SLIDER_HEIGHT, "Leaf Size", 0, 10, 3);
 
@@ -128,7 +128,7 @@ Slider *slider_lightingB = new Slider(WINDOW_WIDTH - 105, 320, 100, SLIDER_HEIGH
 Slider *slider_lightingIntensity = new Slider(WINDOW_WIDTH - 105, 370, 100, SLIDER_HEIGHT, "Intensity", 0, 10, 9);
 
 PushButton *button_update = new PushButton(110, 550, 50, SLIDER_HEIGHT, "Update");
-PushButton *button_ui = new PushButton(110, 550, 50, SLIDER_HEIGHT, "UI");
+PushButton *button_ui = new PushButton(110, 500, 50, SLIDER_HEIGHT, "UI");
 PushButton *button4 = new PushButton(110, 250, 50, 30, "Random Num");
 
 
@@ -184,7 +184,8 @@ void initGlobals()
 	randomOn=0;
 	treeNum=0;
 	leafSize=0;
-	//UI=true;
+	showUi=true;
+
 }
 
 
@@ -547,7 +548,7 @@ void treeDraw(Node *currentNode)
 		{
 			vec3 leafColor = currentNode->getLeafColor();
 			glColor3f(leafColor.x, leafColor.y, leafColor.z);
-			drawSphere(0, 0, 0, leafSize, 1);
+			drawSphere(0, 0, 0, currentNode->getLeafSize(), 1);
 		}
 	}
 }
@@ -561,6 +562,7 @@ void buildMyTree()
 	Node *current = head;
 	current->setColor(treeColor);
 	current->setLeafColor(leafColor);
+	current->setLeafSize(leafSize);
 	tree[treeNum] = treeRecurse(current, startWidth, startDepth);
 	//myTree = treeRecurse(current, startWidth, startDepth);
 	
@@ -597,7 +599,7 @@ void setLighting()
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
 
 
-	glColor3f(1.0, 1.0, 1.0);
+	glColor3f(lightColor0[0], lightColor0[1], lightColor0[2]);
 	drawSphere(lightPos0[0], lightPos0[1], lightPos0[2], 0.2, 3);
 
 }
@@ -667,7 +669,7 @@ void changePitch(float angle)
 
 void setCamera()
 {
-	
+	/*
 	if(key['d'])
 	{
 		roll += ROT_AMOUNT;
@@ -675,7 +677,7 @@ void setCamera()
 	if(key['a'])
 	{
 		roll -= ROT_AMOUNT;
-	}
+	}*/
 	if(key[UP_ARROW])
 	{
 		pitch -= ROT_AMOUNT;
@@ -706,6 +708,19 @@ void setCamera()
 		cam_z -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch));
 	}
 
+	if(key['d'])
+	{
+		cam_x += (ZOOM_AMOUNT)*sin(DEGREES_TO_RADIANS(-yaw - 90));
+		cam_y -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(yaw + 90));
+		cam_z += (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch - 45));
+	}
+    if(key['a'])
+	{
+		cam_x -= (ZOOM_AMOUNT)*sin(DEGREES_TO_RADIANS(-yaw -90));
+		cam_y += (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(yaw + 90));
+		cam_z -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch - 45));
+	}
+
 	
 
 	//gluLookAt(0, 
@@ -719,6 +734,8 @@ void setCamera()
 	glRotatef(roll, 0.0, 1.0, 0.0);
 	glRotatef(yaw, 0.0, 0.0, 1.0);
 	glTranslatef(cam_x, cam_y, cam_z);
+
+	cout<<yaw<<", "<<pitch<<", "<<cam_z<<'\n';
 	
 			  
 }
@@ -1054,14 +1071,14 @@ void drawTree()
 
 void toggleUi()
 {
-	showUi;
+	showUi = !showUi;
 }
 
 
 void setButtonActions()
 {
 	button_update->setAction(buildMyTree);
-//	button_ui->setAction(toggleUI);
+	button_ui->setAction(toggleUi);
 	slider_branches->setAction(buildMyTree);
 	slider_startDepth->setAction(buildMyTree);
 	slider_widthShrink->setAction(buildMyTree);
@@ -1202,7 +1219,9 @@ void draw2Dthings()
 	
 		glPushMatrix();
 		glTranslatef(0, 0, -5.1f);
-
+	drawButton(button_ui);
+	if(showUi)
+	{
 		glBegin(GL_QUADS);
 			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
 			glVertex2f(0.0, 0.0);
@@ -1211,46 +1230,48 @@ void draw2Dthings()
 			glVertex2f(0.0, WINDOW_HEIGHT);
 		glEnd();
 
-	glPopMatrix();
+		glPopMatrix();
 
-	glPushMatrix();
-		glTranslatef(WINDOW_WIDTH - 105, 0, -5.1f);
+		glPushMatrix();
+			glTranslatef(WINDOW_WIDTH - 105, 0, -5.1f);
 
 		glBegin(GL_QUADS);
 			glColor3f(238.0 / 255.0,223 / 255.0, 204.0 / 255.0);
 			glVertex2f(0.0, 0.0);
 			glVertex2f(105.0, 0.0);
-			glVertex2f(105, WINDOW_HEIGHT / 1.5);
-			glVertex2f(0.0, WINDOW_HEIGHT / 1.5);
+			glVertex2f(105, WINDOW_HEIGHT * 3/4);
+			glVertex2f(0.0, WINDOW_HEIGHT * 3/4);
 		glEnd();
 
-	glPopMatrix();
+		glPopMatrix();
 	
-	drawButton(button_update);
-	drawButton(button_ui);
-	drawSlider(slider_treeR);
-	drawSlider(slider_treeG);
-	drawSlider(slider_treeB);
 
-	drawSlider(slider_startWidth);
-	drawSlider(slider_startHeight);
-	drawSlider(slider_startDepth);
-	drawSlider(slider_branches);
-	drawSlider(slider_widthShrink);
-	drawSlider(slider_lengthShrink);
-	drawSlider(slider_randomOn);
-	drawSlider(slider_treeNum);
 	
-	drawSlider(slider_leafB);
-	drawSlider(slider_leafR);
-	drawSlider(slider_leafG);
-	drawSlider(slider_leafSize);
+	
+		drawButton(button_update);
+		drawSlider(slider_treeR);
+		drawSlider(slider_treeG);
+		drawSlider(slider_treeB);
 
-	drawSlider(slider_lightingR);
-	drawSlider(slider_lightingG);
-	drawSlider(slider_lightingB);
-	drawSlider(slider_lightingIntensity);
+		drawSlider(slider_startWidth);
+		drawSlider(slider_startHeight);
+		drawSlider(slider_startDepth);
+		drawSlider(slider_branches);
+		drawSlider(slider_widthShrink);
+		drawSlider(slider_lengthShrink);
+		drawSlider(slider_randomOn);
+		drawSlider(slider_treeNum);
+	
+		drawSlider(slider_leafB);
+		drawSlider(slider_leafR);
+		drawSlider(slider_leafG);
+		drawSlider(slider_leafSize);
 
+		drawSlider(slider_lightingR);
+		drawSlider(slider_lightingG);
+		drawSlider(slider_lightingB);
+		drawSlider(slider_lightingIntensity);
+	}
 
 	glEnable(GL_LIGHTING);
 }
@@ -1345,17 +1366,21 @@ void drawScene() {
 	glPopMatrix();
 
 
-
-
+	
 	glNormal3f(0.0f, 0.0f, 1.0f);
 	GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 	draw2Dthings();
 
 	// Making sure we can render 3d again
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
+	
+
 	glMatrixMode(GL_MODELVIEW);
+	
+
+	
 
 	glutSwapBuffers();
 }
@@ -1383,17 +1408,16 @@ int main(int argc, char** argv) {
 	srand(time(NULL));
 	settings = new Setting_list;
 	loadSettings(settings);
-	cam_z = settings->ZOOM_VALUE;
 
 
 	initGlobals();
 	setButtonActions();
-
+	buildMyTree();
 	initFieldObjects();
 	
 	//buildMyTree();
 
-	glutCreateWindow("NATURE SIMULATOR 2014 - PROFESSIONAL EDITION PLATINUM");
+	glutCreateWindow("NATURE SIMULATOR 2014 - PROFESSIONAL EDITION");
 	initRendering();
 
 	//Set handler functions

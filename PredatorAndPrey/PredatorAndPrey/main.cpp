@@ -37,12 +37,14 @@
 #define Z_PLANE_BOUNDARY 0
 
 
-#define ROT_AMOUNT 1.2
+#define ROT_AMOUNT 2
 #define PAN_AMOUNT 0.3
+#define ZOOM_AMOUNT 2
 #define PI 3.1415926
 
 #define SLIDER_HEIGHT 20
 #define TREES_AMOUNT 5
+#define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * PI)
 
 using namespace std;
 
@@ -53,8 +55,22 @@ float spinSpeed = 0;
 
 //camera starting settings
 float cam_x = 0.0;
-float cam_y = -1.0;
+float cam_y = 0.0;
 float cam_z = 0.0;
+float up_x = 0.0;
+float up_y = 1.0;
+float up_z = 0.0;
+
+float pitch = 0.0;
+float yaw = 0.0;
+float roll = 0.0;
+float zoom = 0.0;
+float strafe = 0.0;
+
+vec4 lookAtVec;
+vec4 upVec;
+vec4 rightVec;
+
 
 //lighting settings
 GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f}; //white light
@@ -150,6 +166,10 @@ void initGlobals()
 	branches = 5;
 	randomOn=0;
 	treeNum=0;
+	
+	lookAtVec = vec3(0.0, 0.0, -1.0);
+	upVec = vec3(0.0, 1.0, 0.0);
+	rightVec = vec3(1.0, 0.0, 0.0);
 }
 
 
@@ -584,52 +604,77 @@ float zoom_y = 0;
 float zoom_z = 0;
 
 
+
+
+void changePitch(float angle)
+{
+	angle = DEGREES_TO_RADIANS(angle);
+
+	
+
+	mat4 pitchMat = RotateX(angle);
+	lookAtVec = pitchMat * lookAtVec;
+	//lookAtVec = normalize(lookAtVec * cos(angle) + upVec * sin(angle));
+	upVec = cross(rightVec, lookAtVec);
+	
+	//upVec = pitchMat * upVec;
+	
+}
+
 void setCamera()
 {
-	if(key['j']){
-		cam_x -= ROT_AMOUNT;
-	}
-	if(key['u']){
-		cam_x += ROT_AMOUNT;
-	}
-	if(key['h']){
-		cam_y += ROT_AMOUNT;
-	}
-	if(key['k']){
-		cam_y -= ROT_AMOUNT;
-	}
-	if(key['y']){
-		cam_z -= ROT_AMOUNT;
-	}
-	if(key['i']){
-		cam_z += ROT_AMOUNT;
-	}
-
-
 	
-	if(key['d']){
-		zoom_x += PAN_AMOUNT;
+	if(key['d'])
+	{
+		roll += ROT_AMOUNT;
 	}
-	if(key['a']){
-		zoom_x -= PAN_AMOUNT;
+	if(key['a'])
+	{
+		roll -= ROT_AMOUNT;
 	}
-	if(key['w']){
-		zoom_y += PAN_AMOUNT;
+	if(key[UP_ARROW])
+	{
+		pitch -= ROT_AMOUNT;
 	}
-	if(key['s']){
-		zoom_y -= PAN_AMOUNT;
+	if(key[DOWN_ARROW])
+	{
+		pitch += ROT_AMOUNT;
 	}
-	if(key['e']){
-		zoom_z += PAN_AMOUNT;
+	if(key[RIGHT_ARROW])
+	{
+		yaw += ROT_AMOUNT;
 	}
-	if(key['q']){
-		zoom_z -= PAN_AMOUNT;
+	if(key[LEFT_ARROW])
+	{
+		yaw -= ROT_AMOUNT;
 	}
 	
+    if(key['w'])
+	{
+		cam_x += (ZOOM_AMOUNT)*sin(DEGREES_TO_RADIANS(-yaw));
+		cam_y -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(yaw));
+		cam_z += (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch));
+	}
+    if(key['s'])
+	{
+		cam_x -= (ZOOM_AMOUNT)*sin(DEGREES_TO_RADIANS(-yaw));
+		cam_y += (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(yaw));
+		cam_z -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch));
+	}
 
 	
-	glTranslatef(zoom_x, zoom_y, zoom_z);
-	//we can definitely improve the functionality using actual rotations, but for now, this works. 
+
+	//gluLookAt(0, 
+	//		  -5,
+	//		  15,  //first three vars are for camera location
+	//		  lookAtVec.x, lookAtVec.y, lookAtVec.z, //2nd three vars are for where the camera is POINTING
+	//		  upVec.x, upVec.y, upVec.z);  //third vars indicate the axis of rotation
+
+	
+	glRotatef(pitch, 1.0, 0.0, 0.0);
+	glRotatef(roll, 0.0, 1.0, 0.0);
+	glRotatef(yaw, 0.0, 0.0, 1.0);
+	glTranslatef(cam_x, cam_y, cam_z);
 	
 			  
 }
@@ -1141,11 +1186,7 @@ void drawScene() {
 	glMatrixMode(GL_MODELVIEW); //Switch to the drawing perspective
 	glLoadIdentity(); //Reset the drawing perspective
 	setCamera();
-	//gluLookAt(0, 
-	//		  -1,
-	//		  15,  //first three vars are for camera location
-	//		  0.0,0.0,0.0, //2nd three vars are for where the camera is POINTING
-	//		  0.0,0.0,1.0);  //third vars indicate the axis of rotation
+	
 	glTranslatef(0.0f, 0.0f, settings->ZOOM_VALUE); //Move forward 5 units
 	glColor3f(1.0, 1.0, 1.0);
     
@@ -1155,10 +1196,10 @@ void drawScene() {
 
 	//drawTree();
 	glPushMatrix();
-	glTranslatef(0, 0, -10);
-	glRotatef(cam_x, 1, 0, 0);
-	glRotatef(cam_y, 0, 1, 0);
-	glRotatef(cam_z, 0, 0, 1);
+	//glTranslatef(0, 0, -10);
+	//glRotatef(cam_x, 1, 0, 0);
+	//glRotatef(cam_y, 0, 1, 0);
+	//glRotatef(cam_z, 0, 0, 1);
 
 	for(int i=0; i<TREES_AMOUNT; i++)
 	{
@@ -1170,6 +1211,26 @@ void drawScene() {
 		treeDraw(tree[i]);
 		glPopMatrix();
 	}
+
+	glColor3f(1.0, 1.0, 1.0);
+	for(int i = -25; i<=25; i+=5)
+	{
+		glBegin(GL_LINES);
+		glNormal3f(0.0f, 0.0f, -1.0f);
+		glVertex3i(i, -25, 0.0);
+		glVertex3f(i, 25, 0.0);
+		glEnd();
+	}
+	
+	for(int i = -25; i<=25; i+=5)
+	{
+		glBegin(GL_LINES);
+		glNormal3f(0.0f, 0.0f, -1.0f);
+		glVertex3i(-25, i, 0.0);
+		glVertex3f(25, i, 0.0);
+		glEnd();
+	}
+
 	glPopMatrix();
 
 	

@@ -667,7 +667,7 @@ void changePitch(float angle)
 
 void setCamera()
 {
-	
+	/*
 	if(key['d'])
 	{
 		roll += ROT_AMOUNT;
@@ -675,7 +675,7 @@ void setCamera()
 	if(key['a'])
 	{
 		roll -= ROT_AMOUNT;
-	}
+	}*/
 	if(key[UP_ARROW])
 	{
 		pitch -= ROT_AMOUNT;
@@ -704,6 +704,19 @@ void setCamera()
 		cam_x -= (ZOOM_AMOUNT)*sin(DEGREES_TO_RADIANS(-yaw));
 		cam_y += (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(yaw));
 		cam_z -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch));
+	}
+
+	if(key['d'])
+	{
+		cam_x += (ZOOM_AMOUNT)*sin(DEGREES_TO_RADIANS(-yaw - 90));
+		cam_y -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(yaw + 90));
+		cam_z += (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch - 45));
+	}
+    if(key['a'])
+	{
+		cam_x -= (ZOOM_AMOUNT)*sin(DEGREES_TO_RADIANS(-yaw -90));
+		cam_y += (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(yaw + 90));
+		cam_z -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch - 45));
 	}
 
 	

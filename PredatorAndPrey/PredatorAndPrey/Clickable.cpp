@@ -39,6 +39,7 @@ void Clickable::setAction(void (*action)())
 
 void Clickable::executeAction()
 {
-	this->action();
+	if(this->action)
+		this->action();
 }
 std::string Clickable::getLabel() {return this->label;}

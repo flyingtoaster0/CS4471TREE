@@ -12,7 +12,6 @@
 #include <string>
 #include "Node.h"
 #include "vec.h"
-#include "mat.h"
 #include "PushButton.h"
 #include "Slider.h"
 #include <time.h>
@@ -66,11 +65,6 @@ float yaw = 50;
 float roll = 0.0;
 float zoom = 0.0;
 float strafe = 0.0;
-
-vec4 lookAtVec;
-vec4 upVec;
-vec4 rightVec;
-
 
 //lighting settings
 GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f}; //white light
@@ -394,14 +388,10 @@ Node *treeRecurse(Node *currentNode, float width, int depth)
 }
 
 
-void drawUpsideDownCone(float base, float height, float slices, float stack)
+void drawCone(float base, float height, float slices, float stack)
 {
-
 	glPushMatrix();
-	//glTranslatef(0,0,height);
-	//glRotatef(180,1,1,1);
 	glutSolidCone(base, height, slices, stack);
-
 	glPopMatrix();
 }
 
@@ -518,7 +508,7 @@ void treeDraw(Node *currentNode)
 	{
 		vec3 treeColor = currentNode->getColor();
 		glColor3f(treeColor.x, treeColor.y, treeColor.z);
-		drawUpsideDownCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
+		drawCone(currentNode->getWidth(), currentNode->getHeight(), 15, 15);
 
 		float angle;
 		vec3 orthogVec;
@@ -645,39 +635,8 @@ void createMenu()
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-float zoom_x = 0;
-float zoom_y = 0;
-float zoom_z = 0;
-
-
-
-
-void changePitch(float angle)
-{
-	angle = DEGREES_TO_RADIANS(angle);
-
-	
-
-	mat4 pitchMat = RotateX(angle);
-	lookAtVec = pitchMat * lookAtVec;
-	//lookAtVec = normalize(lookAtVec * cos(angle) + upVec * sin(angle));
-	upVec = cross(rightVec, lookAtVec);
-	
-	//upVec = pitchMat * upVec;
-	
-}
-
 void setCamera()
 {
-	/*
-	if(key['d'])
-	{
-		roll += ROT_AMOUNT;
-	}
-	if(key['a'])
-	{
-		roll -= ROT_AMOUNT;
-	}*/
 	if(key[UP_ARROW])
 	{
 		pitch -= ROT_AMOUNT;
@@ -720,24 +679,11 @@ void setCamera()
 		cam_y += (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(yaw + 90));
 		cam_z -= (ZOOM_AMOUNT)*cos(DEGREES_TO_RADIANS(pitch - 45));
 	}
-
-	
-
-	//gluLookAt(0, 
-	//		  -5,
-	//		  15,  //first three vars are for camera location
-	//		  lookAtVec.x, lookAtVec.y, lookAtVec.z, //2nd three vars are for where the camera is POINTING
-	//		  upVec.x, upVec.y, upVec.z);  //third vars indicate the axis of rotation
-
 	
 	glRotatef(pitch, 1.0, 0.0, 0.0);
 	glRotatef(roll, 0.0, 1.0, 0.0);
 	glRotatef(yaw, 0.0, 0.0, 1.0);
 	glTranslatef(cam_x, cam_y, cam_z);
-
-	cout<<yaw<<", "<<pitch<<", "<<cam_z<<'\n';
-	
-			  
 }
 
 void loadSettings(Setting_list *settings)
@@ -748,8 +694,8 @@ void loadSettings(Setting_list *settings)
 	
 	//Various non-player related settings
 	ini.select("OPENGL");
-	settings->GLUT_UPDATE_MILLIS = 20; //ini.get<int>("GLUT_UPDATE_MILLIS", 20);
-	settings->ZOOM_VALUE = -15.0;//ini.get<float>("ZOOM_VALUE", -15.0);
+	settings->GLUT_UPDATE_MILLIS = 20;
+	settings->ZOOM_VALUE = -15.0;
 	//Player-related Settings.
 	ini.select("PLAYER");
 	settings->PLAYER_ACCELERATION = ini.get<float>("PLAYER_ACCELERATION", 0.01);
@@ -887,14 +833,6 @@ void keyboardUp(unsigned char rawKeyCode, int x, int y)
 			key['a'] = false;
             keyUp['a'] = false;
             break;
-		case 'q':
-			key['q'] = false;
-            keyUp['q'] = false;
-            break;
-		case 'e':
-			key['e'] = false;
-            keyUp['e'] = false;
-            break;
 		case 's':
 			key['s'] = false;
             keyUp['s'] = false;
@@ -911,26 +849,6 @@ void keyboardUp(unsigned char rawKeyCode, int x, int y)
 			key['/'] = false;
             keyUp['/'] = false;
             break;
-		case 'h':
-			//camera left
-			key['h'] = false;
-			keyDown['h'] = false;
-			break;
-		case 'k':
-			//camera right
-			key['k'] = false;
-			keyDown['k'] = false;
-			break;
-		case 'u':
-			//camera up
-			key['u'] = false;
-			keyDown['u'] = false;
-			break;
-		case 'j':
-			//camera down
-			key['j'] = false;
-			keyDown['j'] = false;
-			break;
 		case 'g':
 			//light source up
 			key['g'] = false;
@@ -1041,34 +959,6 @@ void handleResize(int w, int h) {
 }
 
 
-
-
-
-float _cameraAngle = 0.0f;
-/*
-void renderStringToWindow(string s)
-{
-	void *font = GLUT_BITMAP_TIMES_ROMAN_24;
-	for (string::iterator i = s.begin(); i != s.end(); ++i)
-	{
-		char c = *i;
-		glutBitmapCharacter(font, c);
-	}
-}
-*/
-
-
-void drawTree()
-{
-	
-	glColor3f(0.3, 0.3, 0.3);
-	
-	//glPushMatrix();
-	glTranslatef(0,0,0);
-	
-	//glPopMatrix();
-}
-
 void toggleUi()
 {
 	showUi = !showUi;
@@ -1104,8 +994,6 @@ void setButtonActions()
 
 void renderStringToWindow(string str, int x, int y)
 {
-	
-	//glDisable(GL_LIGHTING);
 	glColor3f(0.0, 0.0, 0.0);
 	
 	glRasterPos2i(x, y);
@@ -1118,7 +1006,6 @@ void renderStringToWindow(string str, int x, int y)
 		char c = *i;
 		glutBitmapCharacter(font, c);
 	}
-	//glEnable(GL_LIGHTING);
 }
 
 void drawButton(PushButton *button)
@@ -1130,30 +1017,15 @@ void drawButton(PushButton *button)
 	glBegin(GL_QUADS);
 	glColor3f(button->getColor().x, button->getColor().y, button->getColor().z);
 	
-	//glColor3f(1.0f, 1.0f, 1.0f);
 
 	glVertex2f(0, 0);
 	glVertex2f(0 + button->getWidth(), 0);
 	glVertex2f(0 + button->getWidth(), 0 + button->getHeight());
-	
 	glVertex2f(0, 0 + button->getHeight());
-
-
-	/*
-	glVertex2f(button->getX(), button->getY());
-	glVertex2f(button->getX() + button->getWidth(), button->getY());
-	glVertex2f(button->getX() + button->getWidth(), button->getY() + button->getHeight());
-	
-	glVertex2f(button->getX(), button->getY() + button->getHeight());
-	*/
 	glEnd();
-
 	glPopMatrix();
 
-	
-	
 	glColor3f(1.0f, 1.0f, 1.0f);
-	
 	renderStringToWindow(button->getLabel(), button->getX(), button->getY() + (button->getHeight() / 2));
 }
 
@@ -1183,36 +1055,17 @@ void drawSlider(Slider *slider)
 	glVertex2f(slider->getWidth(), slider->getHeight());
 	glVertex2f(0, slider->getHeight());
 
-
-	/*
-	glVertex2f(button->getX(), button->getY());
-	glVertex2f(button->getX() + button->getWidth(), button->getY());
-	glVertex2f(button->getX() + button->getWidth(), button->getY() + button->getHeight());
-	
-	glVertex2f(button->getX(), button->getY() + button->getHeight());
-	*/
 	glEnd();
 	glPopMatrix();
 
-	
-	
-	
-
-	
 	glColor3f(1.0f, 1.0f, 1.0f);
-	
 	renderStringToWindow(slider->getLabel(), slider->getX(), slider->getY());
-	//renderStringToWindow(to_string(slider->getValue()), slider->getX() + slider->getWidth() - 9, slider->getY());
 	renderStringToWindow(to_string(slider->getValue()), slider->getX() + slider->sliderBarPos(), slider->getY() + slider->getHeight() - 5);
-
-	
-
-	
 }
 
 
 
-
+//This function deals with drawing everything that isn't in 3D (UI stuff in this case)
 void draw2Dthings()
 {
 	glDisable(GL_LIGHTING);
@@ -1281,6 +1134,7 @@ void draw2Dthings()
 
 
 GLfloat lightPos1[] = {0.0f, 0.0f, 15.0f, 1.0f}; 
+
 //Draws the scene
 void drawScene() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1294,14 +1148,7 @@ void drawScene() {
     
 	setLighting();
     
-
-
-	//drawTree();
 	glPushMatrix();
-	//glTranslatef(0, 0, -10);
-	//glRotatef(cam_x, 1, 0, 0);
-	//glRotatef(cam_y, 0, 1, 0);
-	//glRotatef(cam_z, 0, 0, 1);
 
 	for(int i=0; i<TREES_AMOUNT; i++)
 	{
@@ -1334,18 +1181,12 @@ void drawScene() {
 	}
 
 	glPopMatrix();
-
-	
-	//glNormal3f(0.0f, 0.0f, 1.0f);
-
-
 	glPopMatrix();
 
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	//glOrtho(-(2*GLUT_SCREEN_WIDTH/GLUT_SCREEN_HEIGHT), (2*GLUT_SCREEN_WIDTH/GLUT_SCREEN_HEIGHT), 2, 2, -15.0, 15.0);
 	glOrtho(0.0, WINDOW_WIDTH, WINDOW_HEIGHT, 0.0, -15.0, 15.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1357,16 +1198,7 @@ void drawScene() {
 
 
 	glColor3f(1.0, 1.0, 1.0);
-	glPushMatrix();
 
-	
-	
-	
-	
-	glPopMatrix();
-
-
-	
 	glNormal3f(0.0f, 0.0f, 1.0f);
 	GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
@@ -1378,26 +1210,14 @@ void drawScene() {
 	
 
 	glMatrixMode(GL_MODELVIEW);
-	
-
-	
-
 	glutSwapBuffers();
 }
 
-void update(int value) {
-
-	
-	glutPostRedisplay(); //Tell GLUT that the display has changed
-	
-	//Tell GLUT to call update again in 'GLUT_UPDATE_MILLIS' milliseconds
+void update(int value)
+{
+	glutPostRedisplay();
 	glutTimerFunc(settings->GLUT_UPDATE_MILLIS, update, 0);
 }
-
-void initFieldObjects()
-{
-}
-
 
 int main(int argc, char** argv) {
 	//Initialize GLUT
@@ -1413,9 +1233,6 @@ int main(int argc, char** argv) {
 	initGlobals();
 	setButtonActions();
 	buildMyTree();
-	initFieldObjects();
-	
-	//buildMyTree();
 
 	glutCreateWindow("NATURE SIMULATOR 2014 - PROFESSIONAL EDITION");
 	initRendering();
